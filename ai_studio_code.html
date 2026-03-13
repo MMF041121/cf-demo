@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>我的云端站点</title>
+    <style>
+        body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background: #f0f4f8; }
+        .card { background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        h1 { color: #f38020; } /* Cloudflare 橙色 */
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Hello Cloudflare!</h1>
+        <p>这是我的第一个公网个人网站</p>
+        <p id="time"></p>
+    </div>
+    <script>
+        document.getElementById('time').innerText = "当前访问时间：" + new Date().toLocaleString();
+    </script>
+</body>
+</html>
