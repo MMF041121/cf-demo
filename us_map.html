@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Atlas.Edu | 全美百强高校全景星图 (全端适配版)</title>
+    <title>Atlas.Edu | 全美百强高校全景星图 (全端适配稳定版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -12,8 +12,10 @@
         body, html { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; touch-action: none; }
         
         #map { height: 100%; width: 100%; border-radius: 0.5rem; z-index: 1; }
-        .school-card { animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* 移除之前的卡片动画，防止在频繁触发时卡在透明度 0 的状态 */
+        .school-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .school-card:hover { transform: translateY(-2px); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
         
         .custom-map-card {
             background-color: rgba(255, 255, 255, 0.95);
@@ -23,15 +25,16 @@
             padding: 0;
             color: #1e293b;
             font-family: inherit;
+            /* 核心修复 2：让鼠标绝对穿透卡片，杜绝遮挡地图引发的 DOM 频繁重绘 */
+            pointer-events: none !important; 
         }
         .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, .leaflet-tooltip-left:before, .leaflet-tooltip-right:before {
             display: none !important;
         }
 
-        /* 核心修复：在手机端隐藏跟随鼠标的州域悬浮卡片，防止触屏错乱 */
+        /* 手机端隐藏鼠标跟随卡片 */
         @media (max-width: 768px) {
             .state-ghost-tooltip { display: none !important; }
-            /* 手机端稍微调整弹出的学校卡片大小 */
             .custom-map-card { transform: scale(0.9); transform-origin: bottom center; }
         }
     </style>
@@ -120,13 +123,11 @@
             "Oregon": "俄勒冈州", "Pennsylvania": "宾夕法尼亚州", "Rhode Island": "罗德岛州", "South Carolina": "南卡罗来纳州",
             "South Dakota": "南达科他州", "Tennessee": "田纳西州", "Texas": "德克萨斯州", "Utah": "犹他州",
             "Vermont": "佛蒙特州", "Virginia": "弗吉尼亚州", "Washington": "华盛顿州", "West Virginia": "西弗吉尼亚州",
-            "Wisconsin": "威斯康星州", "Wyoming": "怀俄明州", "District of Columbia": "华盛顿特区", "Puerto Rico": "波多全各"
+            "Wisconsin": "威斯康星州", "Wyoming": "怀俄明州", "District of Columbia": "华盛顿特区", "Puerto Rico": "波多黎各"
         };
 
-        // 判断是否为移动端屏幕
         const isMobile = window.innerWidth < 768;
 
-        // 核心修复：移动端动态调小默认视角 Zoom，确保能在小屏幕看完整张美国地图
         const map = L.map('map', { 
             scrollWheelZoom: true, 
             doubleClickZoom: true, 
@@ -139,12 +140,10 @@
             subdomains: 'abcd',
         }).addTo(map);
 
-        // 处理由于容器大小剧烈变化可能导致的地图灰块渲染问题
         setTimeout(() => { map.invalidateSize(); }, 200);
 
         let isHoveringMarker = false;
 
-        // 加了 state-ghost-tooltip 类，方便在移动端被 CSS 隐藏
         const globalStateTooltip = L.tooltip({
             className: 'custom-map-card state-ghost-tooltip',
             direction: 'top',
@@ -154,7 +153,6 @@
 
         // 初始化高校红点与卡片
         universities.forEach(u => {
-            // 移动端红点稍微调大一点点，方便手指点击
             const marker = L.circleMarker([u.lat, u.lng], {
                 radius: isMobile ? 7 : 6, fillColor: "#ef4444", color: "#ffffff", weight: 1.5, opacity: 1, fillOpacity: 0.9
             }).addTo(map);
@@ -171,11 +169,15 @@
             marker.on('mouseover', function() {
                 isHoveringMarker = true;
                 if(!isMobile) map.closeTooltip(globalStateTooltip);
+
+                const stateZh = stateTranslation[u.stateNameEn] || u.stateNameEn;
+                updatePanel(u.stateNameEn, stateZh);
             });
+            
             marker.on('mouseout', function() {
                 isHoveringMarker = false;
             });
-            // 移动端额外逻辑：点击红点时强制在面板更新所在州的信息
+            
             marker.on('click', function() {
                 const stateZh = stateTranslation[u.stateNameEn] || u.stateNameEn;
                 updatePanel(u.stateNameEn, stateZh);
@@ -196,11 +198,9 @@
                     },
                     onEachFeature: function(feature, layer) {
                         layer.on({
-                            // 移动端触屏会自动把 click 转换成 mouseover 逻辑
                             mouseover: highlightFeature,
                             mousemove: moveTooltip,
                             mouseout: resetHighlight,
-                            // 保证点击州域也能稳定触发面板更新
                             click: highlightFeature 
                         });
                     }
@@ -226,7 +226,6 @@
 
             updatePanel(stateNameEn, stateNameZh);
 
-            // PC端处理逻辑：未悬停在红点上时展示幽灵卡片
             if (!isMobile && !isHoveringMarker) {
                 const stateTooltipContent = `
                     <div class="p-3 min-w-[140px]">
@@ -263,7 +262,14 @@
             map.closeTooltip(globalStateTooltip);
         }
 
+        // 核心修复 1：利用 currentPanelState 缓存机制，拦截所有多余的渲染请求
+        let currentPanelState = '';
+
         function updatePanel(stateEn, stateZh) {
+            // 如果面板正显示该州，直接 Return 掐断运行，防止清空 DOM
+            if (currentPanelState === stateEn) return;
+            currentPanelState = stateEn;
+
             document.getElementById('default-state').classList.add('hidden');
             const activeState = document.getElementById('active-state');
             activeState.classList.remove('hidden');
@@ -303,7 +309,6 @@
             });
         }
         
-        // 监听屏幕大小变化，实时刷新地图内核尺寸
         window.addEventListener('resize', () => { map.invalidateSize(); });
     </script>
 </body>
