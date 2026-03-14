@@ -1,155 +1,296 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>关于我 | 木木非</title>
+    <title>关于我 | 木木非的高级网页实验室</title>
     <style>
-        /* 核心样式：打造高级感 */
+        /* 全局深邃主题与发光变量 */
         :root {
-            --primary-color: #6366f1;
-            --accent-color: #a855f7;
-            --text-color: #ffffff;
+            --primary-bg: #030712;
+            --accent-glow: #6366f1;
+            --secondary-glow: #f43f5e;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
-        body {
+        body, html {
             margin: 0;
             padding: 0;
-            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            color: var(--text-color);
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--primary-bg);
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.08), transparent 25vw),
+                radial-gradient(circle at 85% 30%, rgba(244, 63, 94, 0.08), transparent 25vw);
+        }
+
+        /* 动态背景光球 */
+        .background-blob {
+            position: fixed;
+            width: 50vw;
+            height: 50vw;
+            max-width: 600px;
+            max-height: 600px;
+            border-radius: 50%;
+            filter: blur(120px);
+            z-index: -1;
+            opacity: 0.3;
+            animation: float 25s infinite alternate ease-in-out;
+        }
+        .blob-1 { background: var(--accent-glow); top: -10%; left: -10%; }
+        .blob-2 { background: var(--secondary-glow); bottom: -10%; right: -10%; animation-delay: -7s; }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(100px, 100px) scale(1.1); }
+        }
+
+        /* 顶部导航 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 25px 0;
             display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow: hidden;
+            gap: 40px;
+            background: linear-gradient(to bottom, rgba(3,7,18,0.9), transparent);
+            backdrop-filter: blur(10px);
+            z-index: 100;
         }
-
-        /* 背景流光动画 */
-        body::before {
-            content: "";
-            position: absolute;
-            width: 300px;
-            height: 300px;
-            background: var(--primary-color);
-            filter: blur(100px);
-            border-radius: 50%;
-            top: 10%;
-            left: 10%;
-            z-index: -1;
-            animation: move 10s infinite alternate;
-        }
-
-        @keyframes move {
-            from { transform: translate(0, 0); }
-            to { transform: translate(100px, 100px); }
-        }
-
-        /* 玻璃面板 */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            padding: 3rem;
-            width: 90%;
-            max-width: 500px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            text-align: center;
-            animation: fadeIn 1s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        nav {
-            margin-bottom: 2rem;
-        }
-
         nav a {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255,255,255,0.5);
             text-decoration: none;
-            margin: 0 15px;
-            font-size: 0.9rem;
-            transition: 0.3s;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        nav a:hover, nav a.active {
+            color: white;
+            text-shadow: 0 0 15px var(--accent-glow);
         }
 
-        nav a:hover {
-            color: var(--primary-color);
-            text-shadow: 0 0 10px var(--primary-color);
+        /* 主容器 */
+        main {
+            max-width: 1100px;
+            margin: 120px auto 60px auto;
+            padding: 0 24px;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(to right, #fff, #94a3b8);
+        /* 终端打字机特效 Header */
+        .terminal-header {
+            margin-bottom: 50px;
+            border-left: 3px solid var(--accent-glow);
+            padding-left: 20px;
+        }
+        .terminal-prompt {
+            color: var(--accent-glow);
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1rem;
+            margin-bottom: 10px;
+            letter-spacing: 1px;
+        }
+        .typing-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(135deg, #fff 40%, rgba(255,255,255,0.4));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
         }
 
-        .highlight {
-            color: #f43f5e;
-            font-weight: bold;
-            font-style: italic;
+        /* 网格卡片布局 */
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
         }
 
+        /* 毛玻璃卡片通用样式 */
+        .glass-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 32px;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .glass-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.3);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 卡片具体分布 */
+        .card-profile { grid-column: span 12; display: flex; flex-direction: column; justify-content: space-between; }
+        .card-stack { grid-column: span 12; }
+        .card-projects { grid-column: span 12; }
+        .card-focus { grid-column: span 12; }
+
+        @media (min-width: 768px) {
+            .card-profile { grid-column: span 7; }
+            .card-stack { grid-column: span 5; }
+            .card-projects { grid-column: span 7; }
+            .card-focus { grid-column: span 5; }
+        }
+
+        /* 卡片内部排版 */
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 16px 0;
+            color: white;
+            letter-spacing: 1px;
+        }
+        .card-text {
+            color: var(--text-muted);
+            line-height: 1.7;
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        /* 标签样式 (Tags) */
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
         .tag {
-            background: rgba(99, 102, 241, 0.2);
-            padding: 4px 12px;
+            padding: 6px 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             font-size: 0.8rem;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            display: inline-block;
-            margin-bottom: 1.5rem;
+            color: var(--text-muted);
+            transition: 0.3s;
+        }
+        .tag:hover {
+            color: white;
+            border-color: var(--accent-glow);
+            background: rgba(99, 102, 241, 0.1);
         }
 
-        p {
-            line-height: 1.8;
-            color: #cbd5e1;
-            margin-bottom: 1rem;
+        /* 列表样式 */
+        .project-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
         }
+        .project-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .project-list li:last-child { border-bottom: none; }
+        .project-name { color: white; font-weight: 500; font-size: 0.95rem; }
+        .project-status { font-size: 0.75rem; color: var(--accent-glow); background: rgba(99,102,241,0.1); padding: 4px 10px; border-radius: 12px;}
 
-        .dream {
-            margin-top: 2rem;
-            padding: 1rem;
-            border-left: 4px solid var(--accent-color);
-            background: rgba(168, 85, 247, 0.1);
-            text-align: left;
-            font-size: 0.95rem;
-        }
-
-        .footer {
-            margin-top: 2rem;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.3);
-        }
     </style>
 </head>
 <body>
 
-    <div class="glass-card">
-        <nav>
-            <a href="/">首页</a>
-            <a href="about.html" style="color: white; border-bottom: 2px solid var(--primary-color);">关于我</a>
-        </nav>
+    <div class="background-blob blob-1"></div>
+    <div class="background-blob blob-2"></div>
 
-        <div class="tag">Cloudflare 开发者</div>
-        <h1>关于我</h1>
-        
-        <p>我是 <span style="color: white; font-weight: bold;">木木非</span></p>
-        <p>来自 <span style="color: #60a5fa;">浙江财经大学 (ZUFE)</span></p>
+    <nav>
+        <a href="index.html">首页</a>
+        <a href="about.html" class="active">关于我</a>
+    </nav>
 
-        <div class="dream">
-            “清深光宗耀祖，软微大雪深埋”
+    <main>
+        <header class="terminal-header">
+            <div class="terminal-prompt">mumufei@MacBook-Pro ~ % whoami</div>
+            <h1 class="typing-title">System.out.println("Hello, World!");</h1>
+        </header>
+
+        <div class="bento-grid">
+            
+            <div class="glass-card card-profile">
+                <div>
+                    <div class="card-icon">⚡️</div>
+                    <h2 class="card-title">Identity Status</h2>
+                    <p class="card-text">
+                        我是木木非，目前就读于浙江财经大学 (ZUFE)。我热衷于在代码的世界里构建秩序，从软件工程架构到复杂的数据分析，再到探索全球宏观金融的底层逻辑，我相信技术的尽头是对世界运行规律的深刻理解。
+                    </p>
+                    <p class="card-text" style="margin-top: 15px; font-weight: bold; color: rgba(255,255,255,0.8);">
+                        📍 目标坐标：清深光宗耀祖，软微大雪深埋。
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass-card card-stack">
+                <div class="card-icon">🛠️</div>
+                <h2 class="card-title">Tech Environment</h2>
+                <p class="card-text">日常栖息于 macOS 环境，习惯用代码解决现实问题与效率瓶颈。</p>
+                <div class="tag-container">
+                    <span class="tag">Python</span>
+                    <span class="tag">Anaconda / Jupyter</span>
+                    <span class="tag">面向对象设计 (OOD)</span>
+                    <span class="tag">UML (StarUML)</span>
+                    <span class="tag">数据可视化</span>
+                </div>
+            </div>
+
+            <div class="glass-card card-projects">
+                <div class="card-icon">🚀</div>
+                <h2 class="card-title">Lab Experiments</h2>
+                <ul class="project-list">
+                    <li>
+                        <span class="project-name">天池阿里云算法赛 - 二手车价格预测</span>
+                        <span class="project-status">In Progress</span>
+                    </li>
+                    <li>
+                        <span class="project-name">ZUFE 图书馆座位自动化预约脚本</span>
+                        <span class="project-status">Automated</span>
+                    </li>
+                    <li>
+                        <span class="project-name">Atlas.Edu 全美百强高校交互地图</span>
+                        <span class="project-status">Deployed</span>
+                    </li>
+                    <li>
+                        <span class="project-name">基于 OOD 的票务系统架构设计</span>
+                        <span class="project-status">Completed</span>
+                    </li>
+                    <li>
+                        <span class="project-name">屏幕画笔工具与撤销算法优化</span>
+                        <span class="project-status">Debugged</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="glass-card card-focus">
+                <div class="card-icon">🔬</div>
+                <h2 class="card-title">Research Focus</h2>
+                <p class="card-text">技术只是工具，我的视野延伸至更多跨学科的领域，致力于寻找数据背后的社会与经济脉络。</p>
+                <div class="tag-container">
+                    <span class="tag">概率论与数理统计</span>
+                    <span class="tag">全球金融支付体系 (SWIFT等)</span>
+                    <span class="tag">资产估值与投资分析</span>
+                    <span class="tag">宏观政治经济学</span>
+                </div>
+            </div>
+
         </div>
-
-        <div class="footer">
-            Built with Passion & Cloudflare Pages
-        </div>
-    </div>
+    </main>
 
 </body>
 </html>
