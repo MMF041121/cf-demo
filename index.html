@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>木木非的个人空间</title>
+    <title>木木非的个人空间 | 高级网页实验室</title>
     <style>
-        /* 全局定义：与 About 页保持色系一致但更具动感 */
+        /* 全局定义：深邃宇宙与霓虹光效 */
         :root {
             --primary-bg: #030712;
             --accent-glow: #6366f1;
             --secondary-glow: #f43f5e;
-            --glass: rgba(255, 255, 255, 0.03);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
         body, html {
@@ -27,20 +28,22 @@
         /* 动态背景光球 */
         .background-blob {
             position: absolute;
-            width: 500px;
-            height: 500px;
+            width: 60vw;
+            height: 60vw;
+            max-width: 600px;
+            max-height: 600px;
             border-radius: 50%;
-            filter: blur(80px);
+            filter: blur(100px);
             z-index: -1;
-            opacity: 0.4;
-            animation: float 20s infinite alternate;
+            opacity: 0.35;
+            animation: float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .blob-1 { background: var(--accent-glow); top: -10%; left: -10%; }
-        .blob-2 { background: var(--secondary-glow); bottom: -10%; right: -10%; animation-delay: -5s; }
+        .blob-1 { background: var(--accent-glow); top: -20%; left: -10%; }
+        .blob-2 { background: var(--secondary-glow); bottom: -20%; right: -10%; animation-delay: -5s; }
 
         @keyframes float {
             0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(100px, 50px) scale(1.1); }
+            100% { transform: translate(150px, 80px) scale(1.2); }
         }
 
         /* 导航栏 */
@@ -48,26 +51,29 @@
             position: fixed;
             top: 0;
             width: 100%;
-            padding: 20px 0;
+            padding: 25px 0;
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 40px;
+            background: linear-gradient(to bottom, rgba(3,7,18,0.8), transparent);
             backdrop-filter: blur(10px);
             z-index: 100;
         }
         nav a {
-            color: rgba(255,255,255,0.7);
+            color: rgba(255,255,255,0.6);
             text-decoration: none;
-            font-size: 1rem;
-            transition: 0.3s;
-            letter-spacing: 1px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
         nav a:hover, nav a.active {
             color: white;
             text-shadow: 0 0 15px var(--accent-glow);
         }
 
-        /* 主体内容：英雄区 */
+        /* 主体内容布局 */
         main {
             height: 100vh;
             display: flex;
@@ -75,51 +81,100 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-        }
-
-        .hero-title {
-            font-size: clamp(3rem, 10vw, 6rem);
-            font-weight: 800;
-            margin: 0;
-            background: linear-gradient(to bottom, #fff 40%, rgba(255,255,255,0.5));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            line-height: 1;
+            padding: 0 20px;
+            box-sizing: border-box;
         }
 
         .hero-subtitle {
-            font-size: 1.2rem;
-            color: rgba(255,255,255,0.6);
-            margin-top: 20px;
-            letter-spacing: 4px;
+            font-size: 1.1rem;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 6px;
             text-transform: uppercase;
+            margin-bottom: 10px;
         }
 
-        /* 按钮设计 */
-        .cta-button {
-            margin-top: 40px;
-            padding: 15px 40px;
-            background: white;
-            color: black;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: bold;
-            transition: 0.3s;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+        .hero-title {
+            font-size: clamp(3.5rem, 8vw, 6.5rem);
+            font-weight: 900;
+            margin: 0;
+            background: linear-gradient(135deg, #ffffff 30%, rgba(255,255,255,0.3));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.1;
+            letter-spacing: -2px;
         }
-        .cta-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 30px var(--accent-glow);
-            background: var(--accent-glow);
+
+        .lab-tag {
+            margin-top: 15px;
+            display: inline-block;
+            padding: 6px 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 30px;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.8);
+            letter-spacing: 1px;
+            backdrop-filter: blur(5px);
+        }
+
+        /* 精选项目卡片 (链接到地图) */
+        .featured-project {
+            margin-top: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
             color: white;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            padding: 20px 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .featured-project:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(99, 102, 241, 0.5); /* 边框泛起主色调光芒 */
+            box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.3);
+        }
+
+        .project-badge {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #818cf8;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .project-desc {
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            margin: 0;
         }
 
         /* 底部信息 */
         .footer-note {
             position: absolute;
             bottom: 30px;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+        }
+        
+        .footer-note span {
+            color: rgba(255,255,255,0.6);
+            font-weight: bold;
         }
 
     </style>
@@ -135,14 +190,18 @@
     </nav>
 
     <main>
-        <p class="hero-subtitle">Hello, I am</p>
+        <p class="hero-subtitle">Welcome to</p>
         <h1 class="hero-title">木木非</h1>
-        <p style="margin-top:10px; color:rgba(255,255,255,0.5)">高级无敌牛逼的网页实验室</p>
+        <div class="lab-tag">✨ 高级无敌牛逼的网页实验室</div>
         
-        <a href="about.html" class="cta-button">了解更多</a>
+        <a href="us_map.html" class="featured-project">
+            <span class="project-badge">最新实验成果 / Latest Build</span>
+            <h3 class="project-title">Atlas.Edu | 全美百强高校星图</h3>
+            <p class="project-desc">基于 Leaflet 的交互式地理数据可视化系统</p>
+        </a>
 
         <div class="footer-note">
-            浙财学子 | 梦想：清深光宗耀祖，软微大雪深埋
+            浙财学子 | 梦想：<span>清深</span>光宗耀祖，<span>软微</span>大雪深埋
         </div>
     </main>
 
