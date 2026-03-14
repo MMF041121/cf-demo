@@ -2,12 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QS 2025 全球前 100 名美国高校交互地图 (完美交互版)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Atlas.Edu | 全美百强高校全景星图 (全端适配版)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <style>
+        /* 强制全屏无滚动，防止移动端上下滑动时拉出浏览器白边 */
+        body, html { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; touch-action: none; }
+        
         #map { height: 100%; width: 100%; border-radius: 0.5rem; z-index: 1; }
         .school-card { animation: fadeIn 0.3s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -24,41 +27,53 @@
         .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, .leaflet-tooltip-left:before, .leaflet-tooltip-right:before {
             display: none !important;
         }
+
+        /* 核心修复：在手机端隐藏跟随鼠标的州域悬浮卡片，防止触屏错乱 */
+        @media (max-width: 768px) {
+            .state-ghost-tooltip { display: none !important; }
+            /* 手机端稍微调整弹出的学校卡片大小 */
+            .custom-map-card { transform: scale(0.9); transform-origin: bottom center; }
+        }
     </style>
 </head>
-<body class="bg-slate-50 p-4 md:p-8 flex flex-col h-screen font-sans">
+<body class="bg-slate-50 p-2 md:p-8 flex flex-col font-sans">
 
-    <header class="mb-6">
-        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">🎓 QS 2025 全球前 100 名美国高校地图分布</h1>
-        <p class="text-slate-500 mt-2 text-sm md:text-base">滚动鼠标滑轮可缩放地图。将鼠标悬停在<b>州域</b>或<b>红点</b>上，即可预览详细信息卡片。</p>
+    <header class="mb-2 md:mb-6 shrink-0 px-2 md:px-0">
+        <h1 class="text-xl md:text-3xl font-extrabold text-slate-800 tracking-tight">🎓 QS 2025 美国百强高校分布</h1>
+        <p class="text-slate-500 mt-1 md:mt-2 text-xs md:text-base hidden md:block">滚动鼠标滑轮可缩放地图。将鼠标悬停在州域或红点上，即可预览详细信息卡片。</p>
+        <p class="text-slate-500 mt-1 text-xs md:hidden">双指可缩放地图，点击州域查看详情。</p>
     </header>
 
-    <div class="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden">
-        <div class="w-full md:w-1/3 bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col h-full transition-all" id="info-panel">
+    <div class="flex-1 flex flex-col md:flex-row gap-3 md:gap-6 overflow-hidden min-h-0 w-full">
+        
+        <div class="order-1 md:order-2 w-full h-[50%] md:h-full md:w-2/3 bg-white p-1 md:p-2 rounded-xl shadow-sm border border-slate-200 relative">
+            <div id="map"></div>
+        </div>
+
+        <div class="order-2 md:order-1 w-full h-[50%] md:h-full md:w-1/3 bg-white p-4 md:p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col transition-all overflow-hidden" id="info-panel">
+            
             <div id="default-state" class="flex flex-col items-center justify-center h-full text-slate-400">
-                <svg class="w-16 h-16 mb-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
-                <p class="text-lg font-medium text-center">请将鼠标悬停在右侧地图的州上</p>
+                <svg class="w-12 h-12 md:w-16 md:h-16 mb-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                <p class="text-base md:text-lg font-medium text-center hidden md:block">请将鼠标悬停在右侧地图的州上</p>
+                <p class="text-base md:text-lg font-medium text-center md:hidden">请点击上方地图中的州域</p>
             </div>
 
             <div id="active-state" class="hidden flex-col h-full">
-                <div class="mb-4 pb-4 border-b border-blue-100">
-                    <span class="text-blue-600 font-bold text-sm tracking-wider uppercase mb-1 block">当前选中区域</span>
-                    <h2 id="state-title-zh" class="text-2xl font-black text-slate-800"></h2>
-                    <h3 id="state-title-en" class="text-lg font-medium text-slate-500"></h3>
+                <div class="mb-3 md:mb-4 pb-3 md:pb-4 border-b border-blue-100 shrink-0">
+                    <span class="text-blue-600 font-bold text-xs md:text-sm tracking-wider uppercase mb-1 block">当前选中区域</span>
+                    <h2 id="state-title-zh" class="text-xl md:text-2xl font-black text-slate-800"></h2>
+                    <h3 id="state-title-en" class="text-base md:text-lg font-medium text-slate-500"></h3>
                 </div>
 
-                <div class="flex justify-between items-center mb-4">
-                    <span class="font-bold text-slate-700">🏫 州内顶尖高校</span>
+                <div class="flex justify-between items-center mb-3 md:mb-4 shrink-0">
+                    <span class="font-bold text-slate-700 text-sm md:text-base">🏫 州内顶尖高校</span>
                     <span id="count-badge" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full"></span>
                 </div>
                 
-                <div id="university-list" class="flex-1 overflow-y-auto pr-2 space-y-3 pb-4 custom-scrollbar"></div>
+                <div id="university-list" class="flex-1 overflow-y-auto pr-2 space-y-2 md:space-y-3 pb-2 custom-scrollbar"></div>
             </div>
         </div>
 
-        <div class="w-full md:w-2/3 bg-white p-2 rounded-xl shadow-sm border border-slate-200 relative">
-            <div id="map"></div>
-        </div>
     </div>
 
     <script>
@@ -105,21 +120,33 @@
             "Oregon": "俄勒冈州", "Pennsylvania": "宾夕法尼亚州", "Rhode Island": "罗德岛州", "South Carolina": "南卡罗来纳州",
             "South Dakota": "南达科他州", "Tennessee": "田纳西州", "Texas": "德克萨斯州", "Utah": "犹他州",
             "Vermont": "佛蒙特州", "Virginia": "弗吉尼亚州", "Washington": "华盛顿州", "West Virginia": "西弗吉尼亚州",
-            "Wisconsin": "威斯康星州", "Wyoming": "怀俄明州", "District of Columbia": "华盛顿特区", "Puerto Rico": "波多黎各"
+            "Wisconsin": "威斯康星州", "Wyoming": "怀俄明州", "District of Columbia": "华盛顿特区", "Puerto Rico": "波多全各"
         };
 
-        const map = L.map('map', { scrollWheelZoom: true, doubleClickZoom: true, minZoom: 3, maxZoom: 8 }).setView([38.5, -96.5], 4.5);
+        // 判断是否为移动端屏幕
+        const isMobile = window.innerWidth < 768;
+
+        // 核心修复：移动端动态调小默认视角 Zoom，确保能在小屏幕看完整张美国地图
+        const map = L.map('map', { 
+            scrollWheelZoom: true, 
+            doubleClickZoom: true, 
+            minZoom: isMobile ? 2 : 3, 
+            maxZoom: 8 
+        }).setView([38.5, -96.5], isMobile ? 3.5 : 4.5);
         
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '© OpenStreetMap contributors',
             subdomains: 'abcd',
         }).addTo(map);
 
-        // 核心修复点 1：增加悬停状态锁
+        // 处理由于容器大小剧烈变化可能导致的地图灰块渲染问题
+        setTimeout(() => { map.invalidateSize(); }, 200);
+
         let isHoveringMarker = false;
 
+        // 加了 state-ghost-tooltip 类，方便在移动端被 CSS 隐藏
         const globalStateTooltip = L.tooltip({
-            className: 'custom-map-card',
+            className: 'custom-map-card state-ghost-tooltip',
             direction: 'top',
             offset: [0, -15],
             opacity: 1
@@ -127,71 +154,70 @@
 
         // 初始化高校红点与卡片
         universities.forEach(u => {
+            // 移动端红点稍微调大一点点，方便手指点击
             const marker = L.circleMarker([u.lat, u.lng], {
-                radius: 6, fillColor: "#ef4444", color: "#ffffff", weight: 1.5, opacity: 1, fillOpacity: 0.9
+                radius: isMobile ? 7 : 6, fillColor: "#ef4444", color: "#ffffff", weight: 1.5, opacity: 1, fillOpacity: 0.9
             }).addTo(map);
 
             const markerTooltipContent = `
-                <div class="p-3 w-56">
-                    <strong class="text-sm block mb-1 text-slate-800">${u.name}</strong>
-                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded mb-2 inline-block">QS 全球排名: #${u.rank}</span><br>
-                    <span class="text-xs text-slate-500 flex items-center mt-1">📍 ${u.cityName}</span>
+                <div class="p-2 md:p-3 w-48 md:w-56">
+                    <strong class="text-xs md:text-sm block mb-1 text-slate-800">${u.name}</strong>
+                    <span class="bg-amber-100 text-amber-800 text-[10px] md:text-xs font-bold px-2 py-0.5 rounded mb-1 md:mb-2 inline-block">QS 全球排名: #${u.rank}</span><br>
+                    <span class="text-[10px] md:text-xs text-slate-500 flex items-center mt-1">📍 ${u.cityName}</span>
                 </div>
             `;
             marker.bindTooltip(markerTooltipContent, { direction: 'top', className: 'custom-map-card', offset: [0, -10] });
 
-            // 当鼠标进入红点时，加锁，并强制关闭州的卡片
             marker.on('mouseover', function() {
                 isHoveringMarker = true;
-                map.closeTooltip(globalStateTooltip);
+                if(!isMobile) map.closeTooltip(globalStateTooltip);
             });
-            // 当鼠标移出红点时，解锁
             marker.on('mouseout', function() {
                 isHoveringMarker = false;
+            });
+            // 移动端额外逻辑：点击红点时强制在面板更新所在州的信息
+            marker.on('click', function() {
+                const stateZh = stateTranslation[u.stateNameEn] || u.stateNameEn;
+                updatePanel(u.stateNameEn, stateZh);
             });
         });
 
         let geojsonLayer;
-        let currentHighlightedLayer = null; // 核心修复点 2：记录当前高亮图层，确保精准清除
+        let currentHighlightedLayer = null;
 
         fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
             .then(response => response.json())
             .then(data => {
                 geojsonLayer = L.geoJson(data, {
-                    // 核心修复点 3：让默认地图底色变得更干净（浅灰底色 + 白色描边）
                     style: function(feature) {
                         return { 
-                            weight: 1, 
-                            color: '#ffffff', // 州界线改为纯白，避免看起来像被选中
-                            dashArray: '', 
-                            fillOpacity: 0.6, 
-                            fillColor: '#f1f5f9' // 浅灰蓝色
+                            weight: 1, color: '#ffffff', dashArray: '', fillOpacity: 0.6, fillColor: '#f1f5f9'
                         };
                     },
                     onEachFeature: function(feature, layer) {
                         layer.on({
+                            // 移动端触屏会自动把 click 转换成 mouseover 逻辑
                             mouseover: highlightFeature,
                             mousemove: moveTooltip,
-                            mouseout: resetHighlight
+                            mouseout: resetHighlight,
+                            // 保证点击州域也能稳定触发面板更新
+                            click: highlightFeature 
                         });
                     }
                 }).addTo(map);
             });
 
         function highlightFeature(e) {
-            // 如果之前有高亮的层，先强制复原
             if (currentHighlightedLayer && currentHighlightedLayer !== e.target) {
                 geojsonLayer.resetStyle(currentHighlightedLayer);
             }
             
             var layer = e.target;
-            currentHighlightedLayer = layer; // 记录当前高亮
+            currentHighlightedLayer = layer;
 
-            // 设置高亮状态（醒目的蓝色）
             layer.setStyle({ weight: 2, color: '#3b82f6', fillOpacity: 0.25, fillColor: '#93c5fd' });
             layer.bringToFront();
             
-            // 确保高亮后，红点依然在最上层
             map.eachLayer(function(l) { if (l instanceof L.CircleMarker) l.bringToFront(); });
 
             const stateNameEn = layer.feature.properties.name;
@@ -200,8 +226,8 @@
 
             updatePanel(stateNameEn, stateNameZh);
 
-            // 只有当没有悬停在红点上时，才准备州的卡片
-            if (!isHoveringMarker) {
+            // PC端处理逻辑：未悬停在红点上时展示幽灵卡片
+            if (!isMobile && !isHoveringMarker) {
                 const stateTooltipContent = `
                     <div class="p-3 min-w-[140px]">
                         <h4 class="font-extrabold text-slate-800 text-base leading-tight">${stateNameZh}</h4>
@@ -219,14 +245,13 @@
         }
 
         function moveTooltip(e) {
-            // 只有当没有悬停在红点上时，才让州卡片跟随鼠标移动
-            if (!isHoveringMarker) {
+            if (!isMobile && !isHoveringMarker) {
                 globalStateTooltip.setLatLng(e.latlng);
                 if (!map.hasLayer(globalStateTooltip)) {
                     map.openTooltip(globalStateTooltip);
                 }
             } else {
-                map.closeTooltip(globalStateTooltip); // 双重保险：如果划过红点立刻关闭
+                map.closeTooltip(globalStateTooltip);
             }
         }
 
@@ -254,29 +279,32 @@
             
             if (filteredData.length === 0) {
                 document.getElementById('count-badge').textContent = `0 所`;
-                document.getElementById('count-badge').className = "bg-slate-100 text-slate-500 text-xs font-bold px-3 py-1 rounded-full";
-                listContainer.innerHTML = `<div class="text-slate-400 text-sm mt-4 text-center">该州暂无跻身 QS 前 100 的高校</div>`;
+                document.getElementById('count-badge').className = "bg-slate-100 text-slate-500 text-xs font-bold px-2 py-1 md:px-3 md:py-1 rounded-full";
+                listContainer.innerHTML = `<div class="text-slate-400 text-xs md:text-sm mt-4 text-center">该州暂无跻身 QS 前 100 的高校</div>`;
                 return;
             }
 
             document.getElementById('count-badge').textContent = `共 ${filteredData.length} 所`;
-            document.getElementById('count-badge').className = "bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full";
+            document.getElementById('count-badge').className = "bg-blue-100 text-blue-800 text-xs font-bold px-2 py-1 md:px-3 md:py-1 rounded-full";
 
             filteredData.sort((a, b) => a.rank - b.rank).forEach(u => {
                 const card = document.createElement('div');
-                card.className = "school-card bg-slate-50 border border-slate-200 rounded-lg p-4 flex items-center justify-between";
+                card.className = "school-card bg-slate-50 border border-slate-200 rounded-lg p-3 md:p-4 flex items-center justify-between";
                 card.innerHTML = `
                     <div class="pr-2">
-                        <h3 class="font-bold text-slate-800 text-sm mb-1">${u.name}</h3>
-                        <p class="text-xs text-slate-500 leading-relaxed">📍 ${u.cityName}</p>
+                        <h3 class="font-bold text-slate-800 text-xs md:text-sm mb-1">${u.name}</h3>
+                        <p class="text-[10px] md:text-xs text-slate-500 leading-relaxed">📍 ${u.cityName}</p>
                     </div>
-                    <div class="bg-amber-100 text-amber-800 font-black text-lg px-3 py-1 rounded-md shadow-sm shrink-0">
+                    <div class="bg-amber-100 text-amber-800 font-black text-sm md:text-lg px-2 py-1 md:px-3 md:py-1 rounded-md shadow-sm shrink-0">
                         #${u.rank}
                     </div>
                 `;
                 listContainer.appendChild(card);
             });
         }
+        
+        // 监听屏幕大小变化，实时刷新地图内核尺寸
+        window.addEventListener('resize', () => { map.invalidateSize(); });
     </script>
 </body>
 </html>
