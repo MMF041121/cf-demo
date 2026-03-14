@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QS 2025 全球前 100 名美国高校交互地图 (完美交互版)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        #map { height: 100%; width: 100%; border-radius: 0.5rem; z-index: 1; }
+        .school-card { animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .custom-map-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            border-radius: 0.75rem;
+            padding: 0;
+            color: #1e293b;
+            font-family: inherit;
+        }
+        .leaflet-tooltip-top:before, .leaflet-tooltip-bottom:before, .leaflet-tooltip-left:before, .leaflet-tooltip-right:before {
+            display: none !important;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 p-4 md:p-8 flex flex-col h-screen font-sans">
+
+    <header class="mb-6">
+        <h1 class="text-2xl md:text-3xl font-extrabold text-slate-800 tracking-tight">🎓 QS 2025 全球前 100 名美国高校地图分布</h1>
+        <p class="text-slate-500 mt-2 text-sm md:text-base">滚动鼠标滑轮可缩放地图。将鼠标悬停在<b>州域</b>或<b>红点</b>上，即可预览详细信息卡片。</p>
+    </header>
+
+    <div class="flex-1 flex flex-col md:flex-row gap-6 overflow-hidden">
+        <div class="w-full md:w-1/3 bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col h-full transition-all" id="info-panel">
+            <div id="default-state" class="flex flex-col items-center justify-center h-full text-slate-400">
+                <svg class="w-16 h-16 mb-4 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                <p class="text-lg font-medium text-center">请将鼠标悬停在右侧地图的州上</p>
+            </div>
+
+            <div id="active-state" class="hidden flex-col h-full">
+                <div class="mb-4 pb-4 border-b border-blue-100">
+                    <span class="text-blue-600 font-bold text-sm tracking-wider uppercase mb-1 block">当前选中区域</span>
+                    <h2 id="state-title-zh" class="text-2xl font-black text-slate-800"></h2>
+                    <h3 id="state-title-en" class="text-lg font-medium text-slate-500"></h3>
+                </div>
+
+                <div class="flex justify-between items-center mb-4">
+                    <span class="font-bold text-slate-700">🏫 州内顶尖高校</span>
+                    <span id="count-badge" class="bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full"></span>
+                </div>
+                
+                <div id="university-list" class="flex-1 overflow-y-auto pr-2 space-y-3 pb-4 custom-scrollbar"></div>
+            </div>
+        </div>
+
+        <div class="w-full md:w-2/3 bg-white p-2 rounded-xl shadow-sm border border-slate-200 relative">
+            <div id="map"></div>
+        </div>
+    </div>
+
+    <script>
+        const universities = [
+            { name: "麻省理工学院 (MIT)", rank: 1, stateNameEn: "Massachusetts", cityName: "剑桥 (Cambridge)", lat: 42.3601, lng: -71.0942 },
+            { name: "哈佛大学 (Harvard)", rank: 4, stateNameEn: "Massachusetts", cityName: "剑桥 (Cambridge)", lat: 42.3770, lng: -71.1167 },
+            { name: "斯坦福大学 (Stanford)", rank: 6, stateNameEn: "California", cityName: "斯坦福 (Stanford)", lat: 37.4275, lng: -122.1697 },
+            { name: "加州理工学院 (Caltech)", rank: 10, stateNameEn: "California", cityName: "帕萨迪纳 (Pasadena)", lat: 34.1377, lng: -118.1253 },
+            { name: "宾夕法尼亚大学 (UPenn)", rank: 11, stateNameEn: "Pennsylvania", cityName: "费城 (Philadelphia)", lat: 39.9522, lng: -75.1932 },
+            { name: "加州大学伯克利分校 (UCB)", rank: 12, stateNameEn: "California", cityName: "伯克利 (Berkeley)", lat: 37.8715, lng: -122.2730 },
+            { name: "康奈尔大学 (Cornell)", rank: 16, stateNameEn: "New York", cityName: "伊萨卡 (Ithaca)", lat: 42.4534, lng: -76.4735 },
+            { name: "芝加哥大学 (UChicago)", rank: 21, stateNameEn: "Illinois", cityName: "芝加哥 (Chicago)", lat: 41.7886, lng: -87.5987 },
+            { name: "普林斯顿大学 (Princeton)", rank: 22, stateNameEn: "New Jersey", cityName: "普林斯顿 (Princeton)", lat: 40.3440, lng: -74.6514 },
+            { name: "耶鲁大学 (Yale)", rank: 23, stateNameEn: "Connecticut", cityName: "纽黑文 (New Haven)", lat: 41.3163, lng: -72.9223 },
+            { name: "约翰霍普金斯大学 (JHU)", rank: 32, stateNameEn: "Maryland", cityName: "巴尔的摩 (Baltimore)", lat: 39.3299, lng: -76.6205 },
+            { name: "哥伦比亚大学 (Columbia)", rank: 34, stateNameEn: "New York", cityName: "纽约 (New York)", lat: 40.8075, lng: -73.9626 },
+            { name: "加州大学洛杉矶分校 (UCLA)", rank: 42, stateNameEn: "California", cityName: "洛杉矶 (Los Angeles)", lat: 34.0689, lng: -118.4452 },
+            { name: "纽约大学 (NYU)", rank: 43, stateNameEn: "New York", cityName: "纽约 (New York)", lat: 40.7295, lng: -73.9965 },
+            { name: "密歇根大学安娜堡分校 (UMich)", rank: 44, stateNameEn: "Michigan", cityName: "安娜堡 (Ann Arbor)", lat: 42.2780, lng: -83.7382 },
+            { name: "西北大学 (Northwestern)", rank: 50, stateNameEn: "Illinois", cityName: "埃文斯顿 (Evanston)", lat: 42.0565, lng: -87.6753 },
+            { name: "卡内基梅隆大学 (CMU)", rank: 58, stateNameEn: "Pennsylvania", cityName: "匹兹堡 (Pittsburgh)", lat: 40.4433, lng: -79.9436 },
+            { name: "杜克大学 (Duke)", rank: 61, stateNameEn: "North Carolina", cityName: "达勒姆 (Durham)", lat: 36.0014, lng: -78.9382 },
+            { name: "德克萨斯大学奥斯汀分校 (UT Austin)", rank: 66, stateNameEn: "Texas", cityName: "奥斯汀 (Austin)", lat: 30.2849, lng: -97.7341 },
+            { name: "伊利诺伊大学香槟分校 (UIUC)", rank: 69, stateNameEn: "Illinois", cityName: "香槟 (Champaign)", lat: 40.1020, lng: -88.2272 },
+            { name: "加州大学圣地亚哥分校 (UCSD)", rank: 72, stateNameEn: "California", cityName: "圣地亚哥 (San Diego)", lat: 32.8801, lng: -117.2340 },
+            { name: "华盛顿大学 (UW)", rank: 76, stateNameEn: "Washington", cityName: "西雅图 (Seattle)", lat: 47.6553, lng: -122.3032 },
+            { name: "布朗大学 (Brown)", rank: 79, stateNameEn: "Rhode Island", cityName: "普罗维登斯 (Providence)", lat: 41.8268, lng: -71.4025 },
+            { name: "宾州州立大学 (Penn State)", rank: 89, stateNameEn: "Pennsylvania", cityName: "大学公园 (University Park)", lat: 40.7982, lng: -77.8599 },
+            { name: "普渡大学 (Purdue)", rank: 89, stateNameEn: "Indiana", cityName: "西拉法叶 (West Lafayette)", lat: 40.4237, lng: -86.9212 },
+            { name: "波士顿大学 (BU)", rank: 93, stateNameEn: "Massachusetts", cityName: "波士顿 (Boston)", lat: 42.3505, lng: -71.1054 },
+            { name: "佐治亚理工学院 (Georgia Tech)", rank: 97, stateNameEn: "Georgia", cityName: "亚特兰大 (Atlanta)", lat: 33.7756, lng: -84.3963 }
+        ];
+
+        const stateTranslation = {
+            "Alabama": "阿拉巴马州", "Alaska": "阿拉斯加州", "Arizona": "亚利桑那州", "Arkansas": "阿肯色州",
+            "California": "加利福尼亚州", "Colorado": "科罗拉多州", "Connecticut": "康涅狄格州", "Delaware": "特拉华州",
+            "Florida": "佛罗里达州", "Georgia": "佐治亚州", "Hawaii": "夏威夷州", "Idaho": "爱达荷州",
+            "Illinois": "伊利诺伊州", "Indiana": "印第安纳州", "Iowa": "爱荷华州", "Kansas": "堪萨斯州",
+            "Kentucky": "肯塔基州", "Louisiana": "路易斯安那州", "Maine": "缅因州", "Maryland": "马里兰州",
+            "Massachusetts": "马萨诸塞州", "Michigan": "密歇根州", "Minnesota": "明尼苏达州", "Mississippi": "密西西比州",
+            "Missouri": "密苏里州", "Montana": "蒙大拿州", "Nebraska": "内布拉斯加州", "Nevada": "内华达州",
+            "New Hampshire": "新罕布什尔州", "New Jersey": "新泽西州", "New Mexico": "新墨西哥州", "New York": "纽约州",
+            "North Carolina": "北卡罗来纳州", "North Dakota": "北达科他州", "Ohio": "俄亥俄州", "Oklahoma": "俄克拉荷马州",
+            "Oregon": "俄勒冈州", "Pennsylvania": "宾夕法尼亚州", "Rhode Island": "罗德岛州", "South Carolina": "南卡罗来纳州",
+            "South Dakota": "南达科他州", "Tennessee": "田纳西州", "Texas": "德克萨斯州", "Utah": "犹他州",
+            "Vermont": "佛蒙特州", "Virginia": "弗吉尼亚州", "Washington": "华盛顿州", "West Virginia": "西弗吉尼亚州",
+            "Wisconsin": "威斯康星州", "Wyoming": "怀俄明州", "District of Columbia": "华盛顿特区", "Puerto Rico": "波多黎各"
+        };
+
+        const map = L.map('map', { scrollWheelZoom: true, doubleClickZoom: true, minZoom: 3, maxZoom: 8 }).setView([38.5, -96.5], 4.5);
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap contributors',
+            subdomains: 'abcd',
+        }).addTo(map);
+
+        // 核心修复点 1：增加悬停状态锁
+        let isHoveringMarker = false;
+
+        const globalStateTooltip = L.tooltip({
+            className: 'custom-map-card',
+            direction: 'top',
+            offset: [0, -15],
+            opacity: 1
+        });
+
+        // 初始化高校红点与卡片
+        universities.forEach(u => {
+            const marker = L.circleMarker([u.lat, u.lng], {
+                radius: 6, fillColor: "#ef4444", color: "#ffffff", weight: 1.5, opacity: 1, fillOpacity: 0.9
+            }).addTo(map);
+
+            const markerTooltipContent = `
+                <div class="p-3 w-56">
+                    <strong class="text-sm block mb-1 text-slate-800">${u.name}</strong>
+                    <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded mb-2 inline-block">QS 全球排名: #${u.rank}</span><br>
+                    <span class="text-xs text-slate-500 flex items-center mt-1">📍 ${u.cityName}</span>
+                </div>
+            `;
+            marker.bindTooltip(markerTooltipContent, { direction: 'top', className: 'custom-map-card', offset: [0, -10] });
+
+            // 当鼠标进入红点时，加锁，并强制关闭州的卡片
+            marker.on('mouseover', function() {
+                isHoveringMarker = true;
+                map.closeTooltip(globalStateTooltip);
+            });
+            // 当鼠标移出红点时，解锁
+            marker.on('mouseout', function() {
+                isHoveringMarker = false;
+            });
+        });
+
+        let geojsonLayer;
+        let currentHighlightedLayer = null; // 核心修复点 2：记录当前高亮图层，确保精准清除
+
+        fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json')
+            .then(response => response.json())
+            .then(data => {
+                geojsonLayer = L.geoJson(data, {
+                    // 核心修复点 3：让默认地图底色变得更干净（浅灰底色 + 白色描边）
+                    style: function(feature) {
+                        return { 
+                            weight: 1, 
+                            color: '#ffffff', // 州界线改为纯白，避免看起来像被选中
+                            dashArray: '', 
+                            fillOpacity: 0.6, 
+                            fillColor: '#f1f5f9' // 浅灰蓝色
+                        };
+                    },
+                    onEachFeature: function(feature, layer) {
+                        layer.on({
+                            mouseover: highlightFeature,
+                            mousemove: moveTooltip,
+                            mouseout: resetHighlight
+                        });
+                    }
+                }).addTo(map);
+            });
+
+        function highlightFeature(e) {
+            // 如果之前有高亮的层，先强制复原
+            if (currentHighlightedLayer && currentHighlightedLayer !== e.target) {
+                geojsonLayer.resetStyle(currentHighlightedLayer);
+            }
+            
+            var layer = e.target;
+            currentHighlightedLayer = layer; // 记录当前高亮
+
+            // 设置高亮状态（醒目的蓝色）
+            layer.setStyle({ weight: 2, color: '#3b82f6', fillOpacity: 0.25, fillColor: '#93c5fd' });
+            layer.bringToFront();
+            
+            // 确保高亮后，红点依然在最上层
+            map.eachLayer(function(l) { if (l instanceof L.CircleMarker) l.bringToFront(); });
+
+            const stateNameEn = layer.feature.properties.name;
+            const stateNameZh = stateTranslation[stateNameEn] || stateNameEn;
+            const stateUnivsCount = universities.filter(u => u.stateNameEn === stateNameEn).length;
+
+            updatePanel(stateNameEn, stateNameZh);
+
+            // 只有当没有悬停在红点上时，才准备州的卡片
+            if (!isHoveringMarker) {
+                const stateTooltipContent = `
+                    <div class="p-3 min-w-[140px]">
+                        <h4 class="font-extrabold text-slate-800 text-base leading-tight">${stateNameZh}</h4>
+                        <p class="text-xs text-slate-400 mb-2 font-medium">${stateNameEn}</p>
+                        ${stateUnivsCount > 0 
+                            ? `<div class="bg-blue-50 text-blue-700 border border-blue-100 text-xs font-bold px-2 py-1.5 rounded flex items-center justify-between"><span>🏅 百强高校</span> <span>${stateUnivsCount} 所</span></div>`
+                            : `<div class="bg-slate-50 text-slate-400 border border-slate-100 text-xs font-medium px-2 py-1.5 rounded text-center">暂无百强高校</div>`
+                        }
+                    </div>
+                `;
+                globalStateTooltip.setContent(stateTooltipContent);
+                globalStateTooltip.setLatLng(e.latlng);
+                map.openTooltip(globalStateTooltip);
+            }
+        }
+
+        function moveTooltip(e) {
+            // 只有当没有悬停在红点上时，才让州卡片跟随鼠标移动
+            if (!isHoveringMarker) {
+                globalStateTooltip.setLatLng(e.latlng);
+                if (!map.hasLayer(globalStateTooltip)) {
+                    map.openTooltip(globalStateTooltip);
+                }
+            } else {
+                map.closeTooltip(globalStateTooltip); // 双重保险：如果划过红点立刻关闭
+            }
+        }
+
+        function resetHighlight(e) {
+            geojsonLayer.resetStyle(e.target);
+            if (currentHighlightedLayer === e.target) {
+                currentHighlightedLayer = null;
+            }
+            map.closeTooltip(globalStateTooltip);
+        }
+
+        function updatePanel(stateEn, stateZh) {
+            document.getElementById('default-state').classList.add('hidden');
+            const activeState = document.getElementById('active-state');
+            activeState.classList.remove('hidden');
+            activeState.classList.add('flex');
+
+            document.getElementById('state-title-zh').textContent = stateZh;
+            document.getElementById('state-title-en').textContent = stateEn;
+
+            const listContainer = document.getElementById('university-list');
+            listContainer.innerHTML = '';
+            
+            const filteredData = universities.filter(u => u.stateNameEn === stateEn);
+            
+            if (filteredData.length === 0) {
+                document.getElementById('count-badge').textContent = `0 所`;
+                document.getElementById('count-badge').className = "bg-slate-100 text-slate-500 text-xs font-bold px-3 py-1 rounded-full";
+                listContainer.innerHTML = `<div class="text-slate-400 text-sm mt-4 text-center">该州暂无跻身 QS 前 100 的高校</div>`;
+                return;
+            }
+
+            document.getElementById('count-badge').textContent = `共 ${filteredData.length} 所`;
+            document.getElementById('count-badge').className = "bg-blue-100 text-blue-800 text-xs font-bold px-3 py-1 rounded-full";
+
+            filteredData.sort((a, b) => a.rank - b.rank).forEach(u => {
+                const card = document.createElement('div');
+                card.className = "school-card bg-slate-50 border border-slate-200 rounded-lg p-4 flex items-center justify-between";
+                card.innerHTML = `
+                    <div class="pr-2">
+                        <h3 class="font-bold text-slate-800 text-sm mb-1">${u.name}</h3>
+                        <p class="text-xs text-slate-500 leading-relaxed">📍 ${u.cityName}</p>
+                    </div>
+                    <div class="bg-amber-100 text-amber-800 font-black text-lg px-3 py-1 rounded-md shadow-sm shrink-0">
+                        #${u.rank}
+                    </div>
+                `;
+                listContainer.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
