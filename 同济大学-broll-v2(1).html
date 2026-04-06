@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920, height=1080">
+<title>同济大学 · 2026届志愿填报参考 v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --tier1: #f0a500; --tier1-glow: rgba(240,165,0,0.4); --tier1-bg: rgba(240,165,0,0.08); --tier1-border: rgba(240,165,0,0.25);
+  --tier2: #00c9a7; --tier2-glow: rgba(0,201,167,0.35); --tier2-bg: rgba(0,201,167,0.08); --tier2-border: rgba(0,201,167,0.25);
+  --tier3: #7c6cff; --tier3-glow: rgba(124,108,255,0.35); --tier3-bg: rgba(124,108,255,0.08); --tier3-border: rgba(124,108,255,0.25);
+  --tier4: #e06088; --tier4-glow: rgba(224,96,136,0.35); --tier4-bg: rgba(224,96,136,0.08); --tier4-border: rgba(224,96,136,0.25);
+  --gold: #ffd700; --bg-deep: #06080f; --text: #f0f0f0; --text-dim: rgba(255,255,255,0.45);
+  --glass: rgba(255,255,255,0.05); --glass-border: rgba(255,255,255,0.08);
+}
+html, body { width: 1920px; height: 1080px; overflow: hidden; font-family: 'Noto Sans SC', sans-serif; background: var(--bg-deep); color: var(--text); cursor: none; }
+#particles { position: fixed; inset: 0; z-index: 0; }
+.bg-gradient { position: fixed; inset: 0; z-index: 0; background: radial-gradient(ellipse 900px 700px at 15% 25%, rgba(240,165,0,0.06) 0%, transparent 100%), radial-gradient(ellipse 700px 500px at 85% 75%, rgba(124,108,255,0.05) 0%, transparent 100%), radial-gradient(ellipse 1400px 900px at 50% 50%, rgba(8,14,28,0.9) 0%, var(--bg-deep) 100%); }
+.ambient-glow { position: fixed; width: 700px; height: 700px; border-radius: 50%; filter: blur(150px); opacity: 0; z-index: 0; pointer-events: none; }
+.glow-1 { background: rgba(240,165,0,0.2); top: -250px; left: -150px; }
+.glow-2 { background: rgba(124,108,255,0.15); bottom: -250px; right: -150px; }
+.scene { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; will-change: transform, opacity; z-index: 10; }
+
+/* Scene 0 */
+.intro-badge { display: inline-flex; align-items: center; gap: 10px; padding: 12px 32px; border: 1px solid var(--glass-border); border-radius: 100px; background: var(--glass); backdrop-filter: blur(12px); font-size: 22px; font-weight: 400; letter-spacing: 4px; color: var(--text-dim); margin-bottom: 36px; }
+.intro-badge .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--tier1); box-shadow: 0 0 14px var(--tier1); animation: pulse-dot 2s ease-in-out infinite; }
+@keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.7)} }
+.year-highlight { color: var(--tier1); font-weight: 700; }
+.intro-region { font-family: 'Ma Shan Zheng', cursive; font-size: 120px; letter-spacing: 20px; line-height: 1; margin-bottom: 20px; color: #d42a2a; -webkit-text-stroke: 1.5px rgba(255,255,255,0.6); paint-order: stroke fill; text-shadow: 4px 6px 10px rgba(0,0,0,0.5); }
+.university-name { font-size: 140px; font-weight: 900; letter-spacing: 16px; line-height: 1.1; background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.65) 50%, var(--tier1) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 80px rgba(240,165,0,0.2)); }
+.intro-divider { width: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--tier1), transparent); margin: 36px 0; }
+.intro-stats { display: flex; gap: 100px; margin-top: 24px; }
+.stat-item { text-align: center; }
+.stat-value { font-size: 84px; font-weight: 900; background: linear-gradient(180deg, #fff 20%, var(--tier1) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.stat-label { font-size: 20px; font-weight: 300; color: var(--text-dim); letter-spacing: 4px; margin-top: 6px; }
+.stat-unit { font-size: 34px; font-weight: 400; }
+
+/* Scene 1 概览 */
+.ov-title { font-size: 52px; font-weight: 700; text-align: center; }
+.ov-sub { font-size: 22px; color: var(--text-dim); text-align: center; letter-spacing: 3px; }
+.overview-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; max-width: 1500px; }
+.ov-card { width: 460px; border-radius: 24px; padding: 32px 28px; backdrop-filter: blur(20px); position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.ov-card::before { content:''; position: absolute; top:0; left:0; right:0; height:3px; }
+.ov-card::after { content:''; position: absolute; inset:0; border-radius:24px; border:1px solid; pointer-events:none; }
+.ov-t1 { background: var(--tier1-bg); } .ov-t1::before { background: linear-gradient(90deg, transparent, var(--tier1), transparent); } .ov-t1::after { border-color: var(--tier1-border); }
+.ov-t2 { background: var(--tier2-bg); } .ov-t2::before { background: linear-gradient(90deg, transparent, var(--tier2), transparent); } .ov-t2::after { border-color: var(--tier2-border); }
+.ov-t3 { background: var(--tier3-bg); } .ov-t3::before { background: linear-gradient(90deg, transparent, var(--tier3), transparent); } .ov-t3::after { border-color: var(--tier3-border); }
+.ov-t4 { background: var(--tier4-bg); } .ov-t4::before { background: linear-gradient(90deg, transparent, var(--tier4), transparent); } .ov-t4::after { border-color: var(--tier4-border); }
+.ov-rank { font-size: 52px; font-weight: 900; opacity: 0.1; margin-bottom: 4px; }
+.ov-name { font-size: 32px; font-weight: 900; margin-bottom: 4px; }
+.ov-t1 .ov-name { color: var(--tier1); } .ov-t2 .ov-name { color: var(--tier2); } .ov-t3 .ov-name { color: var(--tier3); } .ov-t4 .ov-name { color: var(--tier4); }
+.ov-code { font-size: 17px; color: var(--text-dim); letter-spacing: 2px; margin-bottom: 8px; }
+.ov-plan { font-size: 17px; font-weight: 700; padding: 4px 16px; border-radius: 100px; margin-bottom: 10px; }
+.ov-t1 .ov-plan { background: rgba(240,165,0,0.15); color: var(--tier1); } .ov-t2 .ov-plan { background: rgba(0,201,167,0.15); color: var(--tier2); }
+.ov-t3 .ov-plan { background: rgba(124,108,255,0.15); color: var(--tier3); } .ov-t4 .ov-plan { background: rgba(224,96,136,0.15); color: var(--tier4); }
+.ov-highlight { font-size: 20px; color: rgba(255,255,255,0.6); font-weight: 300; line-height: 1.7; }
+.ov-footer { font-size: 18px; color: rgba(255,255,255,0.25); letter-spacing: 4px; text-align: center; margin-top: 6px; }
+
+/* 专业卡片 */
+.program-scene { padding: 0 180px; }
+.program-card { width: 100%; max-width: 1540px; border-radius: 28px; backdrop-filter: blur(30px); padding: 44px 56px; position: relative; overflow: hidden; will-change: transform, opacity; }
+.program-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.program-card::after { content:''; position:absolute; inset:0; border-radius:28px; border:1px solid; pointer-events:none; }
+.card-watermark { position: absolute; right: 50px; top: 50%; transform: translateY(-50%); font-size: 280px; font-weight: 900; opacity: 0.035; pointer-events: none; line-height: 1; }
+.card-tier1 { background: var(--tier1-bg); } .card-tier1::before { background: linear-gradient(90deg, transparent, var(--tier1), transparent); } .card-tier1::after { border-color: var(--tier1-border); } .card-tier1 .card-watermark { color: var(--tier1); }
+.card-tier2 { background: var(--tier2-bg); } .card-tier2::before { background: linear-gradient(90deg, transparent, var(--tier2), transparent); } .card-tier2::after { border-color: var(--tier2-border); } .card-tier2 .card-watermark { color: var(--tier2); }
+.card-tier3 { background: var(--tier3-bg); } .card-tier3::before { background: linear-gradient(90deg, transparent, var(--tier3), transparent); } .card-tier3::after { border-color: var(--tier3-border); } .card-tier3 .card-watermark { color: var(--tier3); }
+.card-tier4 { background: var(--tier4-bg); } .card-tier4::before { background: linear-gradient(90deg, transparent, var(--tier4), transparent); } .card-tier4::after { border-color: var(--tier4-border); } .card-tier4 .card-watermark { color: var(--tier4); }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.card-code { font-size: 20px; font-weight: 400; letter-spacing: 3px; opacity: 0.6; }
+.card-plan { padding: 6px 20px; border-radius: 100px; font-size: 18px; font-weight: 700; }
+.card-tier1 .card-code { color: var(--tier1); } .card-tier1 .card-plan { background: rgba(240,165,0,0.2); color: var(--tier1); }
+.card-tier2 .card-code { color: var(--tier2); } .card-tier2 .card-plan { background: rgba(0,201,167,0.2); color: var(--tier2); }
+.card-tier3 .card-code { color: var(--tier3); } .card-tier3 .card-plan { background: rgba(124,108,255,0.2); color: var(--tier3); }
+.card-tier4 .card-code { color: var(--tier4); } .card-tier4 .card-plan { background: rgba(224,96,136,0.2); color: var(--tier4); }
+.card-name { font-size: 72px; font-weight: 900; margin-bottom: 4px; line-height: 1.2; }
+.card-tier1 .card-name { background: linear-gradient(135deg, #fff, var(--tier1)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.card-tier2 .card-name { background: linear-gradient(135deg, #fff, var(--tier2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.card-tier3 .card-name { background: linear-gradient(135deg, #fff, var(--tier3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.card-tier4 .card-name { background: linear-gradient(135deg, #fff, var(--tier4)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.card-category { font-size: 22px; color: var(--text-dim); font-weight: 300; margin-bottom: 14px; letter-spacing: 2px; }
+.card-badge { display: inline-block; padding: 8px 24px; border-radius: 10px; font-size: 20px; font-weight: 700; letter-spacing: 2px; margin-bottom: 16px; }
+.card-tier1 .card-badge { background: rgba(240,165,0,0.12); color: var(--tier1); border: 1px solid rgba(240,165,0,0.2); }
+.card-tier2 .card-badge { background: rgba(0,201,167,0.12); color: var(--tier2); border: 1px solid rgba(0,201,167,0.2); }
+.card-tier3 .card-badge { background: rgba(124,108,255,0.12); color: var(--tier3); border: 1px solid rgba(124,108,255,0.2); }
+.card-tier4 .card-badge { background: rgba(224,96,136,0.12); color: var(--tier4); border: 1px solid rgba(224,96,136,0.2); }
+.card-desc { font-size: 26px; line-height: 1.8; color: rgba(255,255,255,0.7); margin-bottom: 18px; font-weight: 300; }
+.desc-line { display: block; padding-left: 20px; position: relative; }
+.desc-line::before { content:'·'; position:absolute; left:0; font-weight:700; }
+.card-tier1 .desc-line::before { color: var(--tier1); } .card-tier2 .desc-line::before { color: var(--tier2); } .card-tier3 .desc-line::before { color: var(--tier3); } .card-tier4 .desc-line::before { color: var(--tier4); }
+.card-tags { display: flex; flex-wrap: wrap; gap: 12px; }
+.tag { padding: 8px 22px; border-radius: 100px; font-size: 20px; font-weight: 500; }
+.card-tier1 .tag { background: rgba(240,165,0,0.12); border: 1px solid rgba(240,165,0,0.25); color: var(--tier1); }
+.card-tier2 .tag { background: rgba(0,201,167,0.12); border: 1px solid rgba(0,201,167,0.25); color: var(--tier2); }
+.card-tier3 .tag { background: rgba(124,108,255,0.12); border: 1px solid rgba(124,108,255,0.25); color: var(--tier3); }
+.card-tier4 .tag { background: rgba(224,96,136,0.12); border: 1px solid rgba(224,96,136,0.25); color: var(--tier4); }
+
+/* 时间轴 */
+.tl-row { display: flex; align-items: center; justify-content: center; margin: 6px 0 18px; padding: 22px 32px; border-radius: 16px; }
+.tl-row.tl-t1 { background: rgba(240,165,0,0.04); border: 1px solid rgba(240,165,0,0.12); }
+.tl-row.tl-t2 { background: rgba(0,201,167,0.04); border: 1px solid rgba(0,201,167,0.12); }
+.tl-step { text-align: center; min-width: 140px; }
+.tl-dur { font-size: 30px; font-weight: 900; }
+.tl-row.tl-t1 .tl-dur { color: var(--tier1); } .tl-row.tl-t2 .tl-dur { color: var(--tier2); }
+.tl-lbl { font-size: 17px; color: var(--text-dim); margin-top: 4px; }
+.tl-conn { width: 60px; height: 2px; margin: 0 14px; opacity: 0.3; }
+.tl-row.tl-t1 .tl-conn { background: var(--tier1); } .tl-row.tl-t2 .tl-conn { background: var(--tier2); }
+.tl-eq { font-size: 26px; font-weight: 700; margin-left: 28px; }
+.tl-row.tl-t1 .tl-eq { color: var(--tier1); } .tl-row.tl-t2 .tl-eq { color: var(--tier2); }
+
+/* 子卡 */
+.sub-row { display: flex; gap: 18px; margin: 6px 0 16px; }
+.sub-box { flex: 1; border-radius: 16px; padding: 22px 22px; }
+.sub-box.sb1 { background: rgba(124,108,255,0.05); border: 1px solid rgba(124,108,255,0.12); }
+.sub-box.sb2 { background: rgba(0,201,167,0.04); border: 1px solid rgba(0,201,167,0.1); }
+.sub-box.sb3 { background: rgba(240,100,100,0.04); border: 1px solid rgba(240,100,100,0.1); }
+.sub-box.sb4 { background: rgba(0,160,180,0.04); border: 1px solid rgba(0,160,180,0.1); }
+.sub-name { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+.sub-box.sb1 .sub-name { color: var(--tier3); } .sub-box.sb2 .sub-name { color: var(--tier2); }
+.sub-box.sb3 .sub-name { color: #e06060; } .sub-box.sb4 .sub-name { color: #00a0b4; }
+.sub-item { font-size: 21px; line-height: 1.7; color: rgba(255,255,255,0.6); font-weight: 300; padding-left: 16px; position: relative; }
+.sub-item::before { content:'·'; position:absolute; left:0; font-weight:700; }
+.sub-box.sb1 .sub-item::before { color: var(--tier3); } .sub-box.sb2 .sub-item::before { color: var(--tier2); }
+.sub-box.sb3 .sub-item::before { color: #e06060; } .sub-box.sb4 .sub-item::before { color: #00a0b4; }
+
+/* 流程图 */
+.class-flow { display: flex; align-items: stretch; justify-content: center; gap: 0; margin: 6px 0 18px; padding: 18px 0; }
+.flow-node { flex: 1; max-width: 380px; text-align: center; padding: 22px 24px; border-radius: 16px; }
+.flow-node.fn-start { background: rgba(124,108,255,0.04); border: 1px solid rgba(124,108,255,0.12); }
+.flow-node.fn-mid { background: rgba(124,108,255,0.06); border: 1px solid rgba(124,108,255,0.18); }
+.flow-node.fn-end { background: rgba(124,108,255,0.1); border: 1px solid rgba(124,108,255,0.3); box-shadow: 0 0 30px rgba(124,108,255,0.1); }
+.fn-num { font-size: 16px; font-weight: 700; color: var(--tier3); opacity: 0.5; margin-bottom: 4px; }
+.fn-title { font-size: 26px; font-weight: 900; color: var(--tier3); margin-bottom: 6px; }
+.fn-desc { font-size: 18px; color: rgba(255,255,255,0.55); font-weight: 300; line-height: 1.6; }
+.flow-conn { display: flex; align-items: center; justify-content: center; width: 60px; min-width: 60px; font-size: 30px; font-weight: 300; color: var(--tier3); opacity: 0.4; }
+
+/* 热度标签 */
+.class-heat { display: inline-block; padding: 4px 14px; border-radius: 100px; font-size: 16px; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; }
+.class-heat.hot { background: rgba(240,80,60,0.15); color: #f0503c; border: 1px solid rgba(240,80,60,0.25); }
+.class-heat.warm { background: rgba(240,165,0,0.12); color: var(--tier1); border: 1px solid rgba(240,165,0,0.2); }
+.class-heat.cool { background: rgba(0,201,167,0.12); color: var(--tier2); border: 1px solid rgba(0,201,167,0.2); }
+
+/* 四领域表格 */
+.domain-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 16px; overflow: hidden; font-size: 18px; margin-top: 8px; }
+.domain-table thead tr { background: rgba(0,201,167,0.12); }
+.domain-table th { padding: 13px 16px; text-align: left; font-weight: 700; color: var(--tier2); letter-spacing: 2px; border-bottom: 1px solid rgba(0,201,167,0.2); }
+.domain-table tbody tr:nth-child(odd) { background: rgba(255,255,255,0.02); }
+.domain-table tbody tr:nth-child(even) { background: rgba(0,0,0,0.08); }
+.domain-table td { padding: 11px 16px; color: rgba(255,255,255,0.72); line-height: 1.5; vertical-align: top; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.td-domain { font-weight: 900; font-size: 20px; white-space: nowrap; }
+.td-domain.d1 { color: #7c6cff; } .td-domain.d2 { color: #00c9a7; } .td-domain.d3 { color: #f0a500; } .td-domain.d4 { color: #e06088; }
+.domain-note { font-size: 17px; color: var(--text-dim); margin-top: 10px; font-weight: 300; }
+
+/* 缩放浮层 */
+.zoom-overlay-wrap { position: fixed; inset: 0; z-index: 50; pointer-events: none; display: flex; align-items: center; justify-content: center; padding: 0 180px; opacity: 0; }
+.zoom-card { width: 100%; max-width: 1540px; border-radius: 28px; backdrop-filter: blur(30px); padding: 44px 56px; position: absolute; overflow: hidden; will-change: transform, opacity; display: none; }
+.zoom-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.zoom-card::after { content:''; position:absolute; inset:0; border-radius:28px; border:1px solid; pointer-events:none; }
+.zoom-card.card-tier3 { background: var(--tier3-bg); } .zoom-card.card-tier3::before { background: linear-gradient(90deg, transparent, var(--tier3), transparent); } .zoom-card.card-tier3::after { border-color: var(--tier3-border); }
+.zoom-card.card-tier3 .card-watermark { color: var(--tier3); } .zoom-card.card-tier3 .card-code { color: var(--tier3); } .zoom-card.card-tier3 .card-plan { background: rgba(124,108,255,0.2); color: var(--tier3); }
+.zoom-card.card-tier3 .card-name { background: linear-gradient(135deg, #fff, var(--tier3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.zoom-card.card-tier3 .card-badge { background: rgba(124,108,255,0.12); color: var(--tier3); border: 1px solid rgba(124,108,255,0.2); }
+.zoom-card.card-tier3 .desc-line::before { color: var(--tier3); } .zoom-card.card-tier3 .tag { background: rgba(124,108,255,0.12); border: 1px solid rgba(124,108,255,0.25); color: var(--tier3); }
+.zoom-card.card-tier4 { background: var(--tier4-bg); } .zoom-card.card-tier4::before { background: linear-gradient(90deg, transparent, var(--tier4), transparent); } .zoom-card.card-tier4::after { border-color: var(--tier4-border); }
+.zoom-card.card-tier4 .card-watermark { color: var(--tier4); } .zoom-card.card-tier4 .card-code { color: var(--tier4); } .zoom-card.card-tier4 .card-plan { background: rgba(224,96,136,0.2); color: var(--tier4); }
+.zoom-card.card-tier4 .card-name { background: linear-gradient(135deg, #fff, var(--tier4)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.zoom-card.card-tier4 .card-badge { background: rgba(224,96,136,0.12); color: var(--tier4); border: 1px solid rgba(224,96,136,0.2); }
+.zoom-card.card-tier4 .tag { background: rgba(224,96,136,0.12); border: 1px solid rgba(224,96,136,0.25); color: var(--tier4); }
+
+/* 对比 */
+.compare-title { font-size: 56px; font-weight: 700; text-align: center; }
+.compare-subtitle { font-size: 22px; font-weight: 300; color: var(--text-dim); text-align: center; letter-spacing: 4px; }
+.compare-grid { display: grid; grid-template-columns: 160px repeat(4, 1fr); width: 100%; max-width: 1620px; margin: 0 auto; }
+.compare-header { padding: 18px 14px; font-size: 24px; font-weight: 700; text-align: center; border-bottom: 2px solid rgba(255,255,255,0.08); }
+.compare-header.dim-label { text-align: right; font-weight: 400; color: var(--text-dim); font-size: 18px; }
+.compare-dim { padding: 14px 14px; font-size: 20px; color: var(--text-dim); display: flex; align-items: center; justify-content: flex-end; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.compare-cell { padding: 14px 14px; display: flex; align-items: center; justify-content: center; border-bottom: 1px solid rgba(255,255,255,0.04); }
+.bar-container { width: 100%; height: 32px; border-radius: 16px; background: rgba(255,255,255,0.04); overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 16px; width: 0; display: flex; align-items: center; justify-content: flex-end; padding-right: 10px; font-size: 14px; font-weight: 700; color: #fff; }
+.bar-t1 { background: linear-gradient(90deg, rgba(240,165,0,0.2), rgba(240,165,0,0.75)); }
+.bar-t2 { background: linear-gradient(90deg, rgba(0,201,167,0.2), rgba(0,201,167,0.65)); }
+.bar-t3 { background: linear-gradient(90deg, rgba(124,108,255,0.2), rgba(124,108,255,0.6)); }
+.bar-t4 { background: linear-gradient(90deg, rgba(224,96,136,0.2), rgba(224,96,136,0.6)); }
+.compare-check { font-size: 20px; font-weight: 500; }
+
+/* 排名 */
+.ranking-pre-title { font-size: 24px; font-weight: 300; color: var(--text-dim); letter-spacing: 8px; margin-bottom: 12px; }
+.ranking-main-title { font-size: 62px; font-weight: 900; margin-bottom: 44px; background: linear-gradient(135deg, #fff, var(--tier1)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.ranking-list { display: flex; flex-direction: column; gap: 16px; width: 100%; max-width: 1400px; }
+.rank-list-item { display: flex; align-items: center; gap: 32px; padding: 22px 40px; border-radius: 20px; backdrop-filter: blur(20px); position: relative; overflow: hidden; }
+.rank-list-item::before { content:''; position:absolute; left:0; top:0; bottom:0; width:5px; }
+.rank-list-num { font-size: 60px; font-weight: 900; min-width: 80px; text-align: center; -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.rank-list-info { flex: 1; }
+.rank-list-name { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+.rank-list-desc { font-size: 20px; color: var(--text-dim); font-weight: 300; }
+.rank-list-badge { font-size: 18px; font-weight: 700; padding: 6px 18px; border-radius: 100px; white-space: nowrap; }
+.rk-t1 { background: rgba(240,165,0,0.1); border: 1px solid rgba(240,165,0,0.3); box-shadow: 0 0 40px var(--tier1-glow); padding: 28px 44px; }
+.rk-t1::before { background: var(--tier1); width: 6px; }
+.rk-t1 .rank-list-num { font-size: 72px; background: linear-gradient(180deg, var(--tier1), var(--gold)); -webkit-background-clip:text; }
+.rk-t1 .rank-list-name { font-size: 40px; background: linear-gradient(135deg, var(--gold), #fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.rk-t1 .rank-list-badge { background: rgba(255,215,0,0.15); color: var(--gold); border: 1px solid rgba(255,215,0,0.3); }
+.rk-t2 { background: var(--tier2-bg); border: 1px solid var(--tier2-border); } .rk-t2::before { background: var(--tier2); }
+.rk-t2 .rank-list-num { background: linear-gradient(180deg, var(--tier2), rgba(0,201,167,0.4)); -webkit-background-clip:text; }
+.rk-t2 .rank-list-name { color: var(--tier2); } .rk-t2 .rank-list-badge { background: var(--tier2-bg); color: var(--tier2); border: 1px solid var(--tier2-border); }
+.rk-t3 { background: var(--tier3-bg); border: 1px solid var(--tier3-border); } .rk-t3::before { background: var(--tier3); }
+.rk-t3 .rank-list-num { background: linear-gradient(180deg, var(--tier3), rgba(124,108,255,0.4)); -webkit-background-clip:text; }
+.rk-t3 .rank-list-name { color: var(--tier3); } .rk-t3 .rank-list-badge { background: var(--tier3-bg); color: var(--tier3); border: 1px solid var(--tier3-border); }
+.rk-t4 { background: var(--tier4-bg); border: 1px solid var(--tier4-border); } .rk-t4::before { background: var(--tier4); }
+.rk-t4 .rank-list-num { background: linear-gradient(180deg, var(--tier4), rgba(224,96,136,0.4)); -webkit-background-clip:text; }
+.rk-t4 .rank-list-name { color: var(--tier4); } .rk-t4 .rank-list-badge { background: var(--tier4-bg); color: var(--tier4); border: 1px solid var(--tier4-border); }
+
+/* CTA */
+.outro-cta-wrap { text-align: center; }
+.outro-main { font-size: 66px; font-weight: 900; margin-bottom: 24px; background: linear-gradient(135deg, #fff, var(--tier1)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.outro-sub { font-size: 26px; color: var(--text-dim); font-weight: 300; letter-spacing: 3px; margin-bottom: 50px; }
+.outro-btn { display: inline-block; padding: 22px 64px; border-radius: 100px; border: 2px solid var(--tier1); background: rgba(240,165,0,0.08); font-size: 28px; font-weight: 500; color: var(--tier1); letter-spacing: 6px; position: relative; overflow: hidden; }
+.outro-btn::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(240,165,0,0.15),transparent); animation:btn-shimmer 2.5s ease-in-out infinite; }
+@keyframes btn-shimmer { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+
+/* 导航 */
+.nav-bar { position:fixed; bottom:36px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:12px; z-index:1000; padding:10px 22px; border-radius:100px; background:rgba(255,255,255,0.04); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,0.08); }
+.nav-dot { width:12px; height:12px; border-radius:50%; background:rgba(255,255,255,0.15); cursor:pointer; transition:all .4s cubic-bezier(.22,1,.36,1); }
+.nav-dot.active { width:32px; border-radius:6px; background:var(--tier1); box-shadow:0 0 16px var(--tier1-glow); }
+.nav-hint { font-size:16px; color:rgba(255,255,255,0.25); letter-spacing:2px; margin-left:6px; }
+.controls { position:fixed; top:28px; right:28px; z-index:1000; display:flex; gap:10px; opacity:.2; transition:opacity .4s; }
+.controls:hover { opacity:1; }
+.ctrl-btn { width:48px; height:48px; border-radius:50%; border:1px solid var(--glass-border); background:var(--glass); backdrop-filter:blur(12px); color:var(--text); font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .3s; }
+.ctrl-btn:hover { background:rgba(255,255,255,0.12); border-color:var(--tier1); }
+.scene-counter { position:fixed; top:32px; left:32px; z-index:1000; font-size:18px; color:rgba(255,255,255,0.2); letter-spacing:3px; font-weight:300; }
+</style>
+</head>
+<body>
+<div class="bg-gradient"></div>
+<div class="ambient-glow glow-1"></div>
+<div class="ambient-glow glow-2"></div>
+<canvas id="particles"></canvas>
+
+<!-- Scene 0: 开场 -->
+<div id="scene-0" class="scene" style="flex-direction:column">
+  <div class="intro-badge"><span class="dot"></span><span><span class="year-highlight">2026</span>届 · 理科 · 往年招生计划参考</span></div>
+  <div class="intro-region">宁夏高考</div>
+  <div class="university-name">同济大学</div>
+  <div class="intro-divider"></div>
+  <div class="intro-stats">
+    <div class="stat-item"><div class="stat-value"><span data-count="615">0</span></div><div class="stat-label">2025年录取最低分</div></div>
+    <div class="stat-item"><div class="stat-value"><span data-count="350">0</span></div><div class="stat-label">全省排名</div></div>
+    <div class="stat-item"><div class="stat-value"><span data-count="4">0</span><span class="stat-unit"> 档</span></div><div class="stat-label">本次解读梯度</div></div>
+  </div>
+</div>
+
+<!-- Scene 1: 概览 -->
+<div id="scene-1" class="scene" style="flex-direction:column;gap:28px;padding:0 180px">
+  <div class="ov-title">同济大学 · 四档推荐方向</div>
+  <div class="ov-sub">2025年面向宁夏理科全部志愿选项 · 按4个梯度推荐排列</div>
+  <div class="overview-grid">
+    <div class="ov-card ov-t1"><div class="ov-rank">01</div><div class="ov-name">国豪精英班</div><div class="ov-code">第一档推荐</div><div class="ov-plan">工科试验班</div><div class="ov-highlight">国豪书院 · 本研贯通<br>全校工科任选 · 单独排名</div></div>
+    <div class="ov-card ov-t2"><div class="ov-rank">02</div><div class="ov-name">卓越计划班</div><div class="ov-code">第二档推荐</div><div class="ov-plan">工科试验班</div><div class="ov-highlight">国家卓越工程师学院<br>50%保研率 · 四大领域</div></div>
+    <div class="ov-card ov-t3"><div class="ov-rank">03</div><div class="ov-name">信息类</div><div class="ov-code">第三档推荐</div><div class="ov-plan">工科试验班</div><div class="ov-highlight">计算机 · 软件 · AI<br>微电子 · 电气 · 自动化</div></div>
+    <div class="ov-card ov-t4"><div class="ov-rank">04</div><div class="ov-name">理科 + 城建类</div><div class="ov-code">第四档推荐</div><div class="ov-plan">两个大类</div><div class="ov-highlight">数学 · 材料 · 海洋<br>建筑学 · 城乡规划 · 设计</div></div>
+  </div>
+  <div class="ov-footer">按推荐优先级排列 → 接下来逐一详解</div>
+</div>
+
+<!-- Scene 2: 第一档 · 国豪精英班 -->
+<div id="scene-2" class="scene program-scene">
+  <div class="program-card card-tier1">
+    <div class="card-watermark">01</div>
+    <div class="card-header"><div class="card-code">第一档推荐 · 工科试验班（国豪精英班）</div><div class="card-plan">第一档</div></div>
+    <div class="card-name">国豪精英班</div>
+    <div class="card-category">国豪书院 · 本研贯通 · 全校工科任选</div>
+    <div class="card-badge">精英通道 · 有淘汰无增补</div>
+    <div class="tl-row tl-t1">
+      <div class="tl-step"><div class="tl-dur">大一大二</div><div class="tl-lbl">国豪书院 · 宽基础通识</div></div>
+      <div class="tl-conn"></div>
+      <div class="tl-step"><div class="tl-dur">大三起</div><div class="tl-lbl">全校工科专业任选</div></div>
+      <div class="tl-conn"></div>
+      <div class="tl-step"><div class="tl-dur">硕博</div><div class="tl-lbl">本研贯通 · 直送研究生</div></div>
+      <div class="tl-eq">= 本研贯通</div>
+    </div>
+    <div class="card-desc">
+      <span class="desc-line">国豪书院 · 同济大学人才培养模式改革新型学院，助力"本研贯通"培养</span>
+      <span class="desc-line">高端导师负责的完全学分制，探索拔尖人才培养新范式</span>
+      <span class="desc-line">单独排名 + 允许外保，保研路径最灵活，可冲顶名校</span>
+      <span class="desc-line">绩点低于 3.5 淘汰回普通班</span>
+    </div>
+    <div class="card-tags"><div class="tag">国豪书院</div><div class="tag">本研贯通</div><div class="tag">全校工科任选</div><div class="tag">单独排名</div><div class="tag">允许外保</div><div class="tag">完全学分制</div></div>
+  </div>
+</div>
+
+<!-- Scene 3: 第二档 · 卓越计划班 培养体系 -->
+<div id="scene-3" class="scene program-scene">
+  <div class="program-card card-tier2">
+    <div class="card-watermark">02</div>
+    <div class="card-header"><div class="card-code">第二档推荐 · 工科试验班（卓越计划班）· 高考直招</div><div class="card-plan">第二档 · 4大领域</div></div>
+    <div class="card-name">卓越计划班</div>
+    <div class="card-category">国家卓越工程师学院 · 以培养工程智能卓越工程师为目标</div>
+    <div class="card-badge">高保研率约 50% · 先按成绩分类领域再领域任选专业</div>
+    <div class="tl-row tl-t2">
+      <div class="tl-step"><div class="tl-dur">大一末</div><div class="tl-lbl">按综测排名确定领域<br>四域各约 25%</div></div>
+      <div class="tl-conn"></div>
+      <div class="tl-step"><div class="tl-dur">大二末</div><div class="tl-lbl">领域内专业<br>任意选择</div></div>
+      <div class="tl-conn"></div>
+      <div class="tl-step"><div class="tl-dur">读研</div><div class="tl-lbl">对接卓工<br>研究生培养</div></div>
+      <div class="tl-eq">= 两阶段分流</div>
+    </div>
+    <div class="card-desc">
+      <span class="desc-line">四个领域均有「热门工科+冷门工科」组合；若不锁定某一特定专业，各域都能读到一些热门工科专业</span>
+      <span class="desc-line">先选领域再任选专业，不必过度焦虑单一大类内专业冷热分布</span>
+    </div>
+    <div class="card-tags"><div class="tag">高考直招</div><div class="tag">四域 25%</div><div class="tag">保研约50%</div><div class="tag">卓工衔接</div></div>
+  </div>
+</div>
+
+<!-- Scene 4: 第二档 · 四领域专业总表 -->
+<div id="scene-4" class="scene program-scene">
+  <div class="program-card card-tier2">
+    <div class="card-watermark">02</div>
+    <div class="card-header"><div class="card-code">卓越计划班 · 四领域与专业设置（官方结构整理）</div><div class="card-plan">综测排名定领域</div></div>
+    <div class="card-name" style="font-size:54px;">四领域 · 学院与专业</div>
+    <div class="card-category">同一领域内多专业由学院统筹制定一份培养方案（宽基础）</div>
+    <div class="card-badge">大一末定领域 · 大二末领域内任选专业</div>
+    <table class="domain-table">
+      <thead><tr>
+        <th style="width:110px">领域</th>
+        <th style="width:330px">参与学院</th>
+        <th>本科专业覆盖</th>
+        <th style="width:270px">对接卓工研究生方向</th>
+      </tr></thead>
+      <tbody>
+        <tr><td class="td-domain d1">智慧空间</td><td>建筑城规（牵头）、测绘地信、计算机（牵头）、经管、机械能源</td><td>建筑学、历史建筑保护、城乡规划、风景园林、城市设计、测绘、信息安全、数据科学与大数据技术、金融学、建筑环境与能源应用</td><td>城市更新；韧性城市；金融大数据与风控</td></tr>
+        <tr><td class="td-domain d2">工程互联网</td><td>土木（牵头）、环境、经管、计算机（牵头）</td><td>土木工程、智能建造、地质工程、环境工程、环境科学、给排水科学与工程、工程管理、信息管理与信息系统、计算机科学与技术、软件工程</td><td>智能建造；绿色生态与碳中和；深部科学与地下空间；关键软件</td></tr>
+        <tr><td class="td-domain d3">机器人</td><td>机械能源（牵头）、材料、航空航天、设计创意、电子（牵头）、物理</td><td>机械设计制造及其自动化、智能制造工程、材料科学与工程、新能源材料与器件、飞行器制造工程、工业设计、自动化、光电信息科学与工程</td><td>智能制造；新材料；飞行器力学与控制；低空经济</td></tr>
+        <tr><td class="td-domain d4">智能网联车辆</td><td>汽车（牵头）、交通、电子（牵头）、机械能源</td><td>车辆工程（汽车）、交通运输、交通工程、车辆工程、电气工程及其自动化、微电子科学与工程、通信工程、能源与动力工程</td><td>自主智能交通；智能电动车辆；集成电路；智慧能源；高铁与站城融合</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Scene 5: 第三档 · 信息类（专业总览） -->
+<div id="scene-5" class="scene program-scene">
+  <div class="program-card card-tier3">
+    <div class="card-watermark">03</div>
+    <div class="card-header"><div class="card-code">第三档推荐 · 工科试验班（信息类）</div><div class="card-plan">第三档 · 11个专业</div></div>
+    <div class="card-name">信息类工科</div>
+    <div class="card-category">计算机学院 + 电信学院 · 大一下学期期末分流</div>
+    <div class="card-badge">4.5 绩点以上 · 专业可任选</div>
+    <div class="sub-row">
+      <div class="sub-box sb1" id="zoom-src-cs">
+        <div class="sub-name">计算机学院（约30%）</div>
+        <div class="sub-item">计算机科学与技术</div>
+        <div class="sub-item">软件工程（人数最多 占信息类总人数约20%</div>
+        <div class="sub-item">数据科学与大数据技术</div>
+        <div class="sub-item">信息安全</div>
+      </div>
+      <div class="sub-box sb2" id="zoom-src-elec">
+        <div class="sub-name">电信学院（约70%）</div>
+        <div class="sub-item">人工智能</div>
+        <div class="sub-item">电气工程及其自动化</div>
+        <div class="sub-item">微电子科学与工程</div>
+        <div class="sub-item">通信工程</div>
+        <div class="sub-item">自动化</div>
+        <div class="sub-item">光电科学与技术</div>
+        <div class="sub-item">测绘工程</div>
+      </div>
+    </div>
+    <div class="card-tags"><div class="tag">计算机</div><div class="tag">软件工程</div><div class="tag">人工智能</div><div class="tag">微电子</div><div class="tag">电气</div><div class="tag">自动化</div><div class="tag">大一下末分流</div></div>
+  </div>
+</div>
+
+<!-- 信息类缩放浮层 -->
+<div id="zoom-overlay-info" class="zoom-overlay-wrap">
+  <div class="zoom-card card-tier3" id="zd-cs">
+    <div class="card-watermark">CS</div>
+    <div class="card-header"><div class="card-code">计算机学院 · 专业热度与分流规则</div><div class="card-plan">占信息类总人数约 30%</div></div>
+    <div class="card-name">计算机学院 · 热度排序</div>
+    <div class="card-category">分流综合成绩 = 绩点 70% · 面试 20% · 竞赛 5% · 项目 5%</div>
+    <div class="card-badge">志愿优先，成绩排名</div>
+    <div class="sub-row">
+      <div class="sub-box sb3"><div class="class-heat hot">最热门 · 约20%</div><div class="sub-name">软件工程</div><div class="sub-item">计算机学院中人数最多</div><div class="sub-item">最容易进 · 最容易保研</div></div>
+      <div class="sub-box sb2"><div class="class-heat warm">竞争适中</div><div class="sub-name">数据科学与大数据技术</div><div class="sub-item">人数少 · 卷度比计科略低</div><div class="sub-item">大数据 + AI 双方向</div><div class="sub-item">就业方向好</div></div>
+      <div class="sub-box sb1"><div class="class-heat warm">综合实力强</div><div class="sub-name">计算机科学与技术</div><div class="sub-item">计算机学院旗舰专业</div><div class="sub-item">综合实力强 · 竞争激烈</div><div class="sub-item">科研 + 就业均一流</div></div>
+      <div class="sub-box sb4"><div class="class-heat cool">人数少</div><div class="sub-name">信息安全</div><div class="sub-item">人数少 · 保研名额低</div><div class="sub-item">就业与升学情况一般</div><div class="sub-item">对安全方向有兴趣可选</div></div>
+    </div>
+    <div class="card-tags"><div class="tag">绩点70%</div><div class="tag">面试20%</div><div class="tag">竞赛5%</div><div class="tag">项目5%</div><div class="tag">志愿优先</div></div>
+  </div>
+  <div class="zoom-card card-tier3" id="zd-elec">
+    <div class="card-watermark">EE</div>
+    <div class="card-header"><div class="card-code">电信学院 · 专业构成与分流规则</div><div class="card-plan">占信息类总人数约 70%</div></div>
+    <div class="card-name">电信学院 · 七大专业</div>
+    <div class="card-category">分流综合成绩 = 绩点 70% · 面试 20% · 竞赛 5% · 项目 5%</div>
+    <div class="card-badge">4.5 绩点以上可专业任选</div>
+    <div class="sub-row">
+      <div class="sub-box sb3"><div class="class-heat hot">最热 · 国家战略</div><div class="sub-name">人工智能 · 微电子</div><div class="sub-item">AI国家战略核心方向</div><div class="sub-item">微电子 = 集成电路 · 芯片</div><div class="sub-item">竞争最激烈</div></div>
+      <div class="sub-box sb1"><div class="class-heat warm">经典强势</div><div class="sub-name">电气工程 · 自动化</div><div class="sub-item">A+学科 · 电网首选</div><div class="sub-item">自动化 · 机器人 · 控制方向</div><div class="sub-item">就业面宽 · 保研认可度高</div></div>
+      <div class="sub-box sb2"><div class="class-heat cool">竞争适中</div><div class="sub-name">通信工程 · 光电科学 · 测绘</div><div class="sub-item">5G/6G通信 · 光电信息</div><div class="sub-item">测绘工程 · 北斗/遥感</div><div class="sub-item">分流压力相对较小</div></div>
+    </div>
+    <div class="card-tags"><div class="tag">人工智能</div><div class="tag">微电子</div><div class="tag">电气A+学科</div><div class="tag">自动化</div><div class="tag">通信</div><div class="tag">光电</div><div class="tag">测绘</div></div>
+  </div>
+</div>
+
+<!-- Scene 6: 第四档 · 理科+城建类（专业总览） -->
+<div id="scene-6" class="scene program-scene">
+  <div class="program-card card-tier4">
+    <div class="card-watermark">04</div>
+    <div class="card-header"><div class="card-code">第四档推荐 · 理科试验班 + 城市建筑与创意设计类</div><div class="card-plan">第四档 · 两大类</div></div>
+    <div class="card-name">理科 + 城建类</div>
+    <div class="card-category">两个独立大类 · 各自大一末综合成绩分流</div>
+    <div class="card-badge">注意：理科试验班需注意 · 大多数人争数学</div>
+    <div class="sub-row">
+      <div class="sub-box sb1" id="zoom-src-lk">
+        <div class="sub-name">理科试验班</div>
+        <div class="sub-item">数学与应用数学（数学科学学院）</div>
+        <div class="sub-item">统计学（数学科学学院）</div>
+        <div class="sub-item">应用物理学（物理科学与工程学院）</div>
+        <div class="sub-item">工程力学（航空航天与力学学院）</div>
+        <div class="sub-item">海洋科学含海洋技术（海洋与地球科学学院）</div>
+        <div class="sub-item">材料科学与工程（材料科学与工程学院）</div>
+      </div>
+      <div class="sub-box sb2" id="zoom-src-jz">
+        <div class="sub-name">城市建筑与创意设计类</div>
+        <div class="sub-item">建筑学（建筑与城市规划学院）</div>
+        <div class="sub-item">城乡规划（建筑与城市规划学院）</div>
+        <div class="sub-item">风景园林（建筑与城市规划学院）</div>
+        <div class="sub-item">历史建筑保护工程（建筑与城市规划学院）</div>
+        <div class="sub-item">城市设计（建筑与城市规划学院）</div>
+        <div class="sub-item">工业设计（设计创意学院）</div>
+      </div>
+    </div>
+    <div class="card-tags"><div class="tag">数学最热</div><div class="tag">建筑全国顶尖</div><div class="tag">大一末分流</div><div class="tag">综合成绩排名</div><div class="tag">志愿优先</div></div>
+  </div>
+</div>
+
+<!-- 理科+城建 缩放浮层 -->
+<div id="zoom-overlay-lk" class="zoom-overlay-wrap">
+  <div class="zoom-card card-tier4" id="zd-lk">
+    <div class="card-watermark">理</div>
+    <div class="card-header"><div class="card-code">理科试验班 · 类内主修专业确认与分流规则</div><div class="card-plan">大一末选拔 · 分学院确认</div></div>
+    <div class="card-name">理科类 · 分流规则</div>
+    <div class="card-category">分学院 → 学院内专业任选 · 大多数人争数学</div>
+    <div class="card-badge">综合成绩：绩点60% · 特色评测20% · 面试10% · 五育10%</div>
+    <div class="class-flow">
+      <div class="flow-node fn-start"><div class="fn-num">权重 60%</div><div class="fn-title">学业绩点</div><div class="fn-desc">第一学年完整成绩<br>平均绩点×100/5<br>转换为百分制</div></div>
+      <div class="flow-conn">+</div>
+      <div class="flow-node fn-mid"><div class="fn-num">权重 20%</div><div class="fn-title">特色评测</div><div class="fn-desc">高等数学A（上下）<br>普通物理A（上下）<br>四门指标课程绩点</div></div>
+      <div class="flow-conn">+</div>
+      <div class="flow-node fn-mid"><div class="fn-num">权重 10%</div><div class="fn-title">面试</div><div class="fn-desc">知识储备 · 逻辑思维<br>语言表达 · 临场反应<br>按专业兴趣面试</div></div>
+      <div class="flow-conn">+</div>
+      <div class="flow-node fn-end"><div class="fn-num">权重 10%</div><div class="fn-title">五育成绩</div><div class="fn-desc">德智体美劳<br>各学院依据<br>相关规定打分</div></div>
+    </div>
+    <div class="card-desc" style="margin-top:6px;font-size:22px;">
+      <span class="desc-line">按综合成绩从高到低 · 志愿顺序优先录取 · 须填报类内全部专业</span>
+      <span class="desc-line">实际坑位：绝大多数人第一志愿是数学，数学竞争最激烈</span>
+    </div>
+    <div class="card-tags"><div class="tag">绩点60%</div><div class="tag">数学物理指标课20%</div><div class="tag">面试10%</div><div class="tag">五育10%</div></div>
+  </div>
+  <div class="zoom-card card-tier4" id="zd-jz">
+    <div class="card-watermark">城</div>
+    <div class="card-header"><div class="card-code">城市建筑与创意设计类 · 类内主修专业确认与分流规则</div><div class="card-plan">大一末选拔 · 同济建筑顶尖</div></div>
+    <div class="card-name">城建类 · 分流规则</div>
+    <div class="card-category">建筑与城规学院（5专业）+ 设计创意学院（工业设计）</div>
+    <div class="card-badge">综合成绩：绩点70% · 特色评测10% · 面试10% · 五育10%</div>
+    <div class="class-flow">
+      <div class="flow-node fn-start"><div class="fn-num">权重 70%</div><div class="fn-title">学业绩点</div><div class="fn-desc">第一学年平均绩点<br>×100/5<br>转换为百分制</div></div>
+      <div class="flow-conn">+</div>
+      <div class="flow-node fn-mid"><div class="fn-num">权重 10%</div><div class="fn-title">特色评测</div><div class="fn-desc">设计导论<br>设计基础 I<br>设计基础 II<br>三门指标课程</div></div>
+      <div class="flow-conn">+</div>
+      <div class="flow-node fn-mid"><div class="fn-num">权重 10%</div><div class="fn-title">面试</div><div class="fn-desc">综合素养考查<br>专业兴趣面试<br>统一评分标准</div></div>
+      <div class="flow-conn">+</div>
+      <div class="flow-node fn-end"><div class="fn-num">权重 10%</div><div class="fn-title">五育成绩</div><div class="fn-desc">德智体美劳<br>各学院依据<br>相关规定打分</div></div>
+    </div>
+    <div class="card-desc" style="margin-top:6px;font-size:22px;">
+      <span class="desc-line">同济建筑全国顶尖 · 专业方向性强 · 适合有艺术设计倾向考生</span>
+    </div>
+    <div class="card-tags"><div class="tag">绩点70%</div><div class="tag">设计课10%</div><div class="tag">面试10%</div><div class="tag">同济建筑全国顶尖</div></div>
+  </div>
+</div>
+
+<!-- Scene 7: 对比 -->
+<div id="scene-7" class="scene" style="flex-direction:column;gap:18px;padding:0 150px">
+  <div class="compare-title">四档核心维度对比</div>
+  <div class="compare-subtitle">为什么这样排序？看关键差异</div>
+  <div class="compare-grid">
+    <div class="compare-header dim-label">对比维度</div>
+    <div class="compare-header" style="color:var(--tier1)">国豪精英班</div>
+    <div class="compare-header" style="color:var(--tier2)">卓越计划班</div>
+    <div class="compare-header" style="color:var(--tier3)">信息类工科</div>
+    <div class="compare-header" style="color:var(--tier4)">理科 / 城建类</div>
+    <div class="compare-dim">培养层次</div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--tier1)">✦ 本研贯通</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--tier2)">✦ 本硕联培</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--text-dim)">本科</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--text-dim)">本科</div></div>
+    <div class="compare-dim">保研率</div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t1" data-w="95%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t2" data-w="100%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t3" data-w="40%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t4" data-w="28%"></div></div></div>
+    <div class="compare-dim">专业选择自由度</div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--tier1)">✦ 全校工科</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--tier2)">✦ 领域内任选</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--tier3)">11专业竞争</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--text-dim)">学院内有限选</div></div>
+    <div class="compare-dim">精英化程度</div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t1" data-w="100%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t2" data-w="88%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t3" data-w="52%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t4" data-w="38%"></div></div></div>
+    <div class="compare-dim">淘汰 / 分流压力</div>
+    <div class="compare-cell"><div class="compare-check" style="color:#f0503c">⚠ 绩点3.5淘汰</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--tier2)">25%等分四域</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--tier3)">综测竞争分流</div></div>
+    <div class="compare-cell"><div class="compare-check" style="color:var(--text-dim)">综合成绩排名</div></div>
+    <div class="compare-dim">综合推荐</div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t1" data-w="100%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t2" data-w="88%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t3" data-w="70%"></div></div></div>
+    <div class="compare-cell"><div class="bar-container"><div class="bar-fill bar-t4" data-w="50%"></div></div></div>
+  </div>
+</div>
+
+<!-- Scene 8: 排名揭晓 -->
+<div id="scene-8" class="scene" style="flex-direction:column;align-items:center;justify-content:center">
+  <div class="ranking-pre-title">2026届宁夏考生 · 同济大学 · 615分 / 省排 350名</div>
+  <div class="ranking-main-title">专业志愿推荐排序</div>
+  <div class="ranking-list">
+    <div class="rank-list-item rk-t1">
+      <div class="rank-list-num">1</div>
+      <div class="rank-list-info"><div class="rank-list-name">国豪精英班（工科试验班）</div><div class="rank-list-desc">国豪书院 · 本研贯通 · 全校工科任选 · 单独排名 · 允许外保</div></div>
+      <div class="rank-list-badge">极少名额 · 绩点3.5保底</div>
+    </div>
+    <div class="rank-list-item rk-t2">
+      <div class="rank-list-num">2</div>
+      <div class="rank-list-info"><div class="rank-list-name">卓越计划班（工科试验班）</div><div class="rank-list-desc">国家卓越工程师学院 · 四大领域 · 保研约50% · 双导师</div></div>
+      <div class="rank-list-badge">4大领域 · 热门全覆盖</div>
+    </div>
+    <div class="rank-list-item rk-t3">
+      <div class="rank-list-num">3</div>
+      <div class="rank-list-info"><div class="rank-list-name">工科试验班（信息类）</div><div class="rank-list-desc">计算机 · 软件 · AI · 微电子 · 电气 · 自动化 · 11个热门专业</div></div>
+      <div class="rank-list-badge">4.5绩点以上可任选</div>
+    </div>
+    <div class="rank-list-item rk-t4">
+      <div class="rank-list-num">4</div>
+      <div class="rank-list-info"><div class="rank-list-name">理科试验班 / 城市建筑与创意设计类</div><div class="rank-list-desc">数学 · 统计 · 材料 · 海洋 · 建筑 · 规划 · 工业设计</div></div>
+      <div class="rank-list-badge">12个专业 · 方向性强</div>
+    </div>
+  </div>
+</div>
+
+<!-- Scene 9: CTA -->
+<div id="scene-9" class="scene" style="flex-direction:column">
+  <div class="outro-cta-wrap">
+    <div class="outro-main">关注我 · 带你读懂每一所大学</div>
+    <div class="outro-sub">2026届宁夏高考 · 院校招生计划逐校解读中</div>
+    <div class="outro-btn">点击关注 不错过更新</div>
+  </div>
+</div>
+
+<!-- 导航 -->
+<div class="nav-bar" id="navBar">
+  <div class="nav-dot active" data-idx="0"></div><div class="nav-dot" data-idx="1"></div><div class="nav-dot" data-idx="2"></div>
+  <div class="nav-dot" data-idx="3"></div><div class="nav-dot" data-idx="4"></div><div class="nav-dot" data-idx="5"></div>
+  <div class="nav-dot" data-idx="6"></div><div class="nav-dot" data-idx="7"></div><div class="nav-dot" data-idx="8"></div>
+  <div class="nav-dot" data-idx="9"></div>
+  <div class="nav-hint">← → 翻页</div>
+</div>
+<div class="scene-counter" id="sceneCounter">1 / 10</div>
+<div class="controls">
+  <button class="ctrl-btn" id="btnFs">⛶</button>
+  <button class="ctrl-btn" id="btnRe">↺</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script>
+(function(){
+'use strict';
+const TOTAL=10; let cur=-1,animating=false;
+var zoomGroups={
+  5:{overlayId:'zoom-overlay-info',items:[{cardId:'zd-cs',srcId:'zoom-src-cs',origin:'28% 55%'},{cardId:'zd-elec',srcId:'zoom-src-elec',origin:'72% 55%'}],idx:0},
+  6:{overlayId:'zoom-overlay-lk',items:[{cardId:'zd-lk',srcId:'zoom-src-lk',origin:'28% 55%'},{cardId:'zd-jz',srcId:'zoom-src-jz',origin:'72% 55%'}],idx:0}
+};
+var zoomActive=false,activeZoomGroup=null;
+
+const canvas=document.getElementById('particles'),ctx=canvas.getContext('2d');
+canvas.width=1920;canvas.height=1080;
+const pts=Array.from({length:50},()=>({x:Math.random()*1920,y:Math.random()*1080,r:Math.random()*1.8+0.4,dx:(Math.random()-0.5)*0.25,dy:(Math.random()-0.5)*0.25,a:Math.random()*0.3+0.06,p:Math.random()*6.28}));
+(function loop(){ctx.clearRect(0,0,1920,1080);var t=Date.now()*0.001;for(var i=0;i<pts.length;i++){var p=pts[i];p.x+=p.dx;p.y+=p.dy;if(p.x<0)p.x=1920;if(p.x>1920)p.x=0;if(p.y<0)p.y=1080;if(p.y>1080)p.y=0;ctx.globalAlpha=p.a*(0.5+0.5*Math.sin(t+p.p));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,6.28);ctx.fillStyle='#7c9a6e';ctx.fill();}ctx.globalAlpha=1;requestAnimationFrame(loop);})();
+
+function counterUp(el,target,ms){var s=performance.now();(function tick(now){var p=Math.min((now-s)/ms,1);el.textContent=Math.round(target*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(tick);})(s);}
+
+function initAllHidden(){for(var i=0;i<TOTAL;i++)gsap.set('#scene-'+i,{opacity:0,scale:0.92,y:60,pointerEvents:'none'});document.querySelectorAll('.zoom-overlay-wrap').forEach(function(o){gsap.set(o,{opacity:0,pointerEvents:'none'});});document.querySelectorAll('.zoom-card').forEach(function(c){c.style.display='none';});}
+
+function updateNav(){document.getElementById('sceneCounter').textContent=(cur+1)+' / '+TOTAL;document.querySelectorAll('.nav-dot').forEach(function(d,i){d.classList.toggle('active',i===cur);});}
+
+function enterScene(idx){
+  if(idx===cur||animating)return;animating=true;var prev=cur;cur=idx;updateNav();
+  var tl=gsap.timeline({onComplete:function(){animating=false;},defaults:{ease:'power4.out',force3D:true}});
+  if(prev>=0){var dir=idx>prev?-1:1;tl.to('#scene-'+prev,{opacity:0,scale:0.88,y:dir*80,duration:0.55,ease:'power3.in',onComplete:function(){gsap.set('#scene-'+prev,{pointerEvents:'none'});}},0);}
+  var dir2=prev<0?0:(idx>prev?1:-1);gsap.set('#scene-'+idx,{opacity:0,scale:0.92,y:dir2*-80});
+  tl.to('#scene-'+idx,{opacity:1,scale:1,y:0,duration:0.75,delay:prev>=0?0.15:0,onStart:function(){gsap.set('#scene-'+idx,{pointerEvents:'auto'});}},prev>=0?0.2:0);
+  if(zoomGroups[idx])zoomGroups[idx].idx=0;buildEnter(idx,tl,prev>=0?0.5:0.3);
+}
+
+function doZoomIn(hostScene){
+  var g=zoomGroups[hostScene];if(animating||!g||!g.items[g.idx])return;animating=true;activeZoomGroup=hostScene;
+  var z=g.items[g.idx],card=document.getElementById(z.cardId),overlay=document.getElementById(g.overlayId),sc='#scene-'+hostScene;
+  gsap.to('#'+z.srcId,{scale:1.15,boxShadow:'0 0 60px rgba(124,108,255,0.4)',duration:0.3,ease:'power2.out'});
+  var tl=gsap.timeline({onComplete:function(){animating=false;zoomActive=true;},defaults:{force3D:true}});
+  tl.to(sc+' .card-header, '+sc+' .card-name, '+sc+' .card-category, '+sc+' .card-badge, '+sc+' .card-tags, '+sc+' .card-watermark',{opacity:0,duration:0.3,ease:'power2.in'},0);
+  document.querySelectorAll(sc+' .sub-box').forEach(function(box){if(box.id!==z.srcId)tl.to(box,{opacity:0,scale:0.85,duration:0.35,ease:'power2.in'},0);});
+  tl.to(sc+' .program-card',{opacity:0,duration:0.2},0.35);
+  card.style.display='block';gsap.set(overlay,{opacity:1,pointerEvents:'auto'});
+  var sel='#'+z.cardId;
+  gsap.set(sel+' .class-flow, '+sel+' .sub-row, '+sel+' .card-tags, '+sel+' .card-desc',{opacity:1});
+  gsap.set(sel+' .card-header, '+sel+' .card-name, '+sel+' .card-category, '+sel+' .card-badge, '+sel+' .card-watermark',{opacity:0,y:0});
+  gsap.set(card,{scale:0.22,opacity:0,transformOrigin:z.origin});
+  tl.to(card,{scale:1,opacity:1,transformOrigin:'50% 50%',duration:0.85,ease:'power3.inOut'},0.2);
+  tl.fromTo(sel+' .card-watermark',{opacity:0},{opacity:0.035,duration:0.5},0.7)
+    .fromTo(sel+' .card-header, '+sel+' .card-name, '+sel+' .card-category',{opacity:0,y:15},{opacity:1,y:0,duration:0.4,stagger:0.06},0.75)
+    .fromTo(sel+' .card-badge',{opacity:0,scale:0.8},{opacity:1,scale:1,duration:0.35,ease:'back.out(2)'},0.85)
+    .fromTo(sel+' .flow-node',{y:25,opacity:0,scale:0.85},{y:0,opacity:1,scale:1,duration:0.5,stagger:0.12,ease:'back.out(1.4)'},0.9)
+    .fromTo(sel+' .flow-conn',{opacity:0,scaleX:0},{opacity:1,scaleX:1,duration:0.3,stagger:0.1},1.0)
+    .fromTo(sel+' .sub-box',{y:30,opacity:0,scale:0.9},{y:0,opacity:1,scale:1,duration:0.5,stagger:0.1,ease:'back.out(1.4)'},0.9)
+    .fromTo(sel+' .class-heat',{opacity:0,scale:0.5},{opacity:1,scale:1,duration:0.3,stagger:0.08,ease:'back.out(2.5)'},1.1)
+    .fromTo(sel+' .sub-item',{opacity:0,x:10},{opacity:1,x:0,duration:0.2,stagger:0.03},1.1)
+    .fromTo(sel+' .desc-line',{opacity:0,x:15},{opacity:1,x:0,duration:0.3,stagger:0.06},1.15)
+    .fromTo(sel+' .tag',{opacity:0,scale:0.6,y:10},{opacity:1,scale:1,y:0,duration:0.4,stagger:0.06,ease:'back.out(2.5)'},1.3);
+}
+
+function doZoomOut(){
+  if(animating||activeZoomGroup===null)return;animating=true;zoomActive=false;
+  var hostScene=activeZoomGroup,g=zoomGroups[hostScene],z=g.items[g.idx],card=document.getElementById(z.cardId),sel='#'+z.cardId,sc='#scene-'+hostScene;
+  var tl=gsap.timeline({defaults:{force3D:true},onComplete:function(){card.style.display='none';gsap.set('#'+g.overlayId,{opacity:0,pointerEvents:'none'});g.idx++;activeZoomGroup=null;animating=false;}});
+  tl.to(sel+' .card-header, '+sel+' .card-name, '+sel+' .card-category, '+sel+' .card-badge, '+sel+' .card-tags, '+sel+' .card-watermark, '+sel+' .class-flow, '+sel+' .sub-row, '+sel+' .card-desc',{opacity:0,duration:0.25,ease:'power2.in'},0)
+    .to(card,{scale:0.22,opacity:0,transformOrigin:z.origin,duration:0.7,ease:'power3.inOut'},0.1);
+  gsap.set(sc+' .program-card',{opacity:1});
+  gsap.set(sc+' .card-header, '+sc+' .card-name, '+sc+' .card-category, '+sc+' .card-badge, '+sc+' .card-tags',{opacity:1});
+  gsap.set(sc+' .card-watermark',{opacity:0.035});
+  document.querySelectorAll(sc+' .sub-box').forEach(function(box){gsap.set(box,{opacity:1,scale:1,boxShadow:'none'});});
+  tl.fromTo(sc+' .program-card',{opacity:0,scale:0.95},{opacity:1,scale:1,duration:0.5,ease:'power2.out'},0.45)
+    .fromTo(sc+' .sub-box',{opacity:0,y:15,scale:0.92},{opacity:1,y:0,scale:1,duration:0.4,stagger:0.05,ease:'back.out(1.3)'},0.6)
+    .fromTo(sc+' .card-header, '+sc+' .card-name, '+sc+' .card-category, '+sc+' .card-badge, '+sc+' .card-tags',{opacity:0},{opacity:1,duration:0.35,stagger:0.03},0.55)
+    .fromTo(sc+' .card-watermark',{opacity:0},{opacity:0.035,duration:0.5},0.55);
+}
+
+function buildEnter(idx,tl,base){
+  var sc='#scene-'+idx;
+  if(idx===0){
+    tl.fromTo(sc+' .intro-badge',{y:-30,opacity:0},{y:0,opacity:1,duration:0.7},base)
+      .fromTo(sc+' .intro-region',{y:30,opacity:0,scale:0.85},{y:0,opacity:1,scale:1,duration:0.8,ease:'back.out(1.4)'},base+0.1)
+      .fromTo(sc+' .university-name',{y:50,opacity:0,scale:0.9},{y:0,opacity:1,scale:1,duration:0.9},base+0.4)
+      .fromTo(sc+' .intro-divider',{width:0},{width:500,duration:0.8,ease:'power2.inOut'},base+0.6)
+      .fromTo(sc+' .stat-item',{y:40,opacity:0},{y:0,opacity:1,duration:0.6,stagger:0.18,ease:'back.out(1.6)'},base+0.9);
+    tl.call(function(){document.querySelectorAll('[data-count]').forEach(function(el){counterUp(el,+el.dataset.count,1200);});},null,base+1);
+    tl.fromTo('.ambient-glow',{opacity:0},{opacity:1,duration:1.5},base);
+  }
+  if(idx===1){
+    tl.fromTo(sc+' .ov-title',{y:-30,opacity:0},{y:0,opacity:1,duration:0.6},base)
+      .fromTo(sc+' .ov-sub',{opacity:0},{opacity:1,duration:0.5},base+0.15)
+      .fromTo(sc+' .ov-card',{y:60,opacity:0,scale:0.85},{y:0,opacity:1,scale:1,duration:0.7,stagger:0.12,ease:'back.out(1.4)'},base+0.3)
+      .fromTo(sc+' .ov-footer',{opacity:0},{opacity:1,duration:0.5},base+1.1);
+  }
+  if(idx>=2&&idx<=6){
+    var card=sc+' .program-card',fromX=(idx%2===0)?100:-100;
+    tl.fromTo(card,{x:fromX,opacity:0,scale:0.88,rotateY:fromX>0?-6:6},{x:0,opacity:1,scale:1,rotateY:0,duration:0.85},base)
+      .fromTo(sc+' .card-watermark',{opacity:0,scale:0.7},{opacity:0.035,scale:1,duration:0.9},base+0.15);
+    var badge=document.querySelector(sc+' .card-badge');if(badge)tl.fromTo(sc+' .card-badge',{opacity:0,scale:0.8},{opacity:1,scale:1,duration:0.4,ease:'back.out(2)'},base+0.4);
+    var scEl=document.getElementById('scene-'+idx);
+    if(scEl.querySelector('.tl-row')){tl.fromTo(sc+' .tl-step',{y:20,opacity:0},{y:0,opacity:1,duration:0.4,stagger:0.12,ease:'back.out(1.5)'},base+0.45).fromTo(sc+' .tl-conn',{scaleX:0,opacity:0},{scaleX:1,opacity:1,duration:0.4,stagger:0.1},base+0.6).fromTo(sc+' .tl-eq',{opacity:0,x:-10},{opacity:1,x:0,duration:0.4},base+0.9);}
+    if(scEl.querySelector('.desc-line'))tl.fromTo(sc+' .desc-line',{opacity:0,x:20},{opacity:1,x:0,duration:0.35,stagger:0.08},base+0.5);
+    if(scEl.querySelector('.sub-row')){tl.fromTo(sc+' .sub-box',{y:30,opacity:0,scale:0.9},{y:0,opacity:1,scale:1,duration:0.5,stagger:0.08,ease:'back.out(1.4)'},base+0.45).fromTo(sc+' .sub-item',{opacity:0,x:10},{opacity:1,x:0,duration:0.2,stagger:0.03},base+0.7);}
+    if(scEl.querySelector('.domain-table')){tl.fromTo(sc+' .domain-table',{opacity:0,y:20},{opacity:1,y:0,duration:0.6},base+0.45).fromTo(sc+' .domain-note',{opacity:0},{opacity:1,duration:0.4},base+0.85);}
+    tl.fromTo(sc+' .tag',{opacity:0,scale:0.6,y:10},{opacity:1,scale:1,y:0,duration:0.4,stagger:0.06,ease:'back.out(2.5)'},base+0.85);
+  }
+  if(idx===7){
+    tl.fromTo(sc+' .compare-title',{y:-30,opacity:0},{y:0,opacity:1,duration:0.6},base)
+      .fromTo(sc+' .compare-subtitle',{opacity:0},{opacity:1,duration:0.5},base+0.2)
+      .fromTo(sc+' .compare-header',{y:-20,opacity:0},{y:0,opacity:1,duration:0.4,stagger:0.06},base+0.3)
+      .fromTo(sc+' .compare-dim',{x:-20,opacity:0},{x:0,opacity:1,duration:0.3,stagger:0.05},base+0.5)
+      .fromTo(sc+' .compare-cell',{opacity:0,scale:0.9},{opacity:1,scale:1,duration:0.25,stagger:0.03},base+0.6);
+    tl.call(function(){document.querySelectorAll('.bar-fill').forEach(function(b){gsap.to(b,{width:b.dataset.w,duration:1,ease:'power2.out',delay:0.1});});},null,base+0.9);
+  }
+  if(idx===8){
+    tl.fromTo(sc+' .ranking-pre-title',{opacity:0,y:-20},{opacity:1,y:0,duration:0.6},base)
+      .fromTo(sc+' .ranking-main-title',{opacity:0,y:-20},{opacity:1,y:0,duration:0.7},base+0.15);
+    document.querySelectorAll(sc+' .rank-list-item').forEach(function(item,i){tl.fromTo(item,{x:200,opacity:0,scale:0.9},{x:0,opacity:1,scale:1,duration:0.7,ease:'back.out(1.4)'},base+0.6+i*0.38);});
+  }
+  if(idx===9){tl.fromTo(sc+' .outro-main',{opacity:0,y:30,scale:0.9},{opacity:1,y:0,scale:1,duration:0.8},base).fromTo(sc+' .outro-sub',{opacity:0},{opacity:1,duration:0.6},base+0.3).fromTo(sc+' .outro-btn',{opacity:0,y:20},{opacity:1,y:0,duration:0.6},base+0.6);}
+}
+
+function goNext(){if(animating)return;if(zoomActive){doZoomOut();return;}var g=zoomGroups[cur];if(g&&g.idx<g.items.length){doZoomIn(cur);return;}if(cur+1<TOTAL)enterScene(cur+1);}
+function goPrev(){if(animating)return;if(zoomActive){doZoomOut();return;}if(cur-1>=0)enterScene(cur-1);}
+function goTo(idx){if(animating)return;if(zoomActive){doZoomOut();setTimeout(function(){enterScene(idx);},900);return;}enterScene(idx);}
+
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();goNext();}if(e.key==='ArrowLeft'){e.preventDefault();goPrev();}if(e.key==='f'){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}});
+document.querySelectorAll('.nav-dot').forEach(function(d){d.addEventListener('click',function(){goTo(+d.dataset.idx);});});
+document.getElementById('btnFs').addEventListener('click',function(){if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();});
+document.getElementById('btnRe').addEventListener('click',function(){initAllHidden();cur=-1;animating=false;zoomActive=false;activeZoomGroup=null;for(var k in zoomGroups)zoomGroups[k].idx=0;document.querySelectorAll('.bar-fill').forEach(function(b){b.style.width='0';});document.querySelectorAll('.nav-dot').forEach(function(d,i){d.classList.toggle('active',i===0);});document.getElementById('sceneCounter').textContent='1 / '+TOTAL;setTimeout(function(){enterScene(0);},100);});
+window.addEventListener('load',function(){initAllHidden();setTimeout(function(){enterScene(0);},400);});
+})();
+</script>
+</body>
+</html>
