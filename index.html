@@ -22,7 +22,9 @@
             background-color: var(--primary-bg);
             font-family: 'Inter', -apple-system, sans-serif;
             color: white;
-            overflow: hidden; /* 保持首页精致，不滚动 */
+            /* 调整为允许垂直滚动，防止项目变多时手机端显示不全 */
+            overflow-x: hidden; 
+            overflow-y: auto; 
         }
 
         /* 动态背景光球 */
@@ -75,14 +77,15 @@
 
         /* 主体内容布局 */
         main {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 0 20px;
+            padding: 120px 20px 80px 20px; /* 增加上下内边距，适应多项目情况 */
             box-sizing: border-box;
+            position: relative;
         }
 
         .hero-subtitle {
@@ -117,9 +120,19 @@
             backdrop-filter: blur(5px);
         }
 
-        /* 精选项目卡片 (链接到地图) */
-        .featured-project {
+        /* 新增：项目卡片容器 */
+        .projects-container {
+            display: flex;
+            gap: 25px;
             margin-top: 50px;
+            flex-wrap: wrap; /* 空间不够时自动换行 */
+            justify-content: center;
+            width: 100%;
+            max-width: 900px; /* 控制最大宽度，使得两个卡片在电脑上正好并排居中 */
+        }
+
+        /* 修改：精选项目卡片 */
+        .featured-project {
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -127,19 +140,27 @@
             color: white;
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
-            padding: 20px 30px;
+            padding: 25px 30px;
             border-radius: 20px;
             backdrop-filter: blur(12px);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-width: 400px;
             width: 100%;
+            max-width: 380px; /* 调整宽度，适合并排显示 */
+            box-sizing: border-box;
+            position: relative;
         }
 
         .featured-project:hover {
             transform: translateY(-8px);
             background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(99, 102, 241, 0.5); /* 边框泛起主色调光芒 */
+            border-color: rgba(99, 102, 241, 0.5);
             box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.3);
+        }
+
+        /* 单独给招生解析项目加一个悬浮红光特效，区分色彩 */
+        .featured-project.data-insight:hover {
+            border-color: rgba(244, 63, 94, 0.5);
+            box-shadow: 0 15px 30px -10px rgba(244, 63, 94, 0.3);
         }
 
         .project-badge {
@@ -151,22 +172,27 @@
             font-weight: bold;
         }
 
+        /* 红色系徽章样式 */
+        .project-badge.red {
+            color: #fb7185;
+        }
+
         .project-title {
             font-size: 1.25rem;
             font-weight: 700;
-            margin: 0 0 5px 0;
+            margin: 0 0 8px 0;
         }
 
         .project-desc {
             font-size: 0.85rem;
             color: rgba(255,255,255,0.5);
             margin: 0;
+            line-height: 1.5;
         }
 
         /* 底部信息 */
         .footer-note {
-            position: absolute;
-            bottom: 30px;
+            margin-top: 60px;
             font-size: 0.85rem;
             color: rgba(255,255,255,0.3);
             letter-spacing: 1px;
@@ -194,11 +220,24 @@
         <h1 class="hero-title">木木非</h1>
         <div class="lab-tag">✨ 高级无敌牛逼的网页实验室</div>
         
-        <a href="us_map.html" class="featured-project">
-            <span class="project-badge">最新实验成果 / Latest Build</span>
-            <h3 class="project-title">Atlas.Edu | 全美百强高校星图</h3>
-            <p class="project-desc">基于 Leaflet 的交互式地理数据可视化系统</p>
-        </a>
+        <div class="projects-container">
+            
+            <!-- 项目一：招生解析 (新项目) -->
+            <!-- 将来如果你有更多学校，可以把这里当做一个系列入口，或者继续复制这样的卡片 -->
+            <a href="西安交通大学-broll-v2.html" class="featured-project data-insight">
+                <span class="project-badge red">数据洞察 / Data Insights</span>
+                <h3 class="project-title">宁夏招生解析 | 西安交通大学</h3>
+                <p class="project-desc">国内高校宁夏招生专业历年录取数据多维可视化与深度剖析</p>
+            </a>
+
+            <!-- 项目二：全美高校星图 (原项目) -->
+            <a href="us_map.html" class="featured-project">
+                <span class="project-badge">地理可视化 / Geo-Data</span>
+                <h3 class="project-title">Atlas.Edu | 全美百强高校星图</h3>
+                <p class="project-desc">基于 Leaflet 的交互式地理数据可视化与高校分布系统</p>
+            </a>
+
+        </div>
 
         <div class="footer-note">
             浙财学子 | 梦想：<span>清深</span>光宗耀祖，<span>软微</span>大雪深埋
