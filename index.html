@@ -22,7 +22,6 @@
             background-color: var(--primary-bg);
             font-family: 'Inter', -apple-system, sans-serif;
             color: white;
-            /* 调整为允许垂直滚动，防止项目变多时手机端显示不全 */
             overflow-x: hidden; 
             overflow-y: auto; 
         }
@@ -83,7 +82,7 @@
             justify-content: center;
             align-items: center;
             text-align: center;
-            padding: 120px 20px 80px 20px; /* 增加上下内边距，适应多项目情况 */
+            padding: 120px 20px 80px 20px; 
             box-sizing: border-box;
             position: relative;
         }
@@ -120,18 +119,18 @@
             backdrop-filter: blur(5px);
         }
 
-        /* 新增：项目卡片容器 */
+        /* 项目卡片容器 */
         .projects-container {
             display: flex;
             gap: 25px;
             margin-top: 50px;
-            flex-wrap: wrap; /* 空间不够时自动换行 */
+            flex-wrap: wrap; 
             justify-content: center;
             width: 100%;
-            max-width: 900px; /* 控制最大宽度，使得两个卡片在电脑上正好并排居中 */
+            max-width: 900px; 
         }
 
-        /* 修改：精选项目卡片 */
+        /* 精选项目卡片 */
         .featured-project {
             display: flex;
             flex-direction: column;
@@ -145,9 +144,14 @@
             backdrop-filter: blur(12px);
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             width: 100%;
-            max-width: 380px; /* 调整宽度，适合并排显示 */
+            max-width: 380px; 
             box-sizing: border-box;
             position: relative;
+        }
+
+        /* 纯展示卡片（带有交互元素，如按钮和下拉框时使用） */
+        .featured-project.interactive-card {
+            cursor: default; /* 取消超链接的小手图标，因为里面有按钮 */
         }
 
         .featured-project:hover {
@@ -157,7 +161,6 @@
             box-shadow: 0 15px 30px -10px rgba(99, 102, 241, 0.3);
         }
 
-        /* 单独给招生解析项目加一个悬浮红光特效，区分色彩 */
         .featured-project.data-insight:hover {
             border-color: rgba(244, 63, 94, 0.5);
             box-shadow: 0 15px 30px -10px rgba(244, 63, 94, 0.3);
@@ -172,7 +175,6 @@
             font-weight: bold;
         }
 
-        /* 红色系徽章样式 */
         .project-badge.red {
             color: #fb7185;
         }
@@ -186,8 +188,57 @@
         .project-desc {
             font-size: 0.85rem;
             color: rgba(255,255,255,0.5);
-            margin: 0;
+            margin: 0 0 15px 0;
             line-height: 1.5;
+        }
+
+        /* --- 新增：下拉选择器与按钮样式 --- */
+        .school-selector {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-top: auto; /* 让它在卡片底部对齐 */
+        }
+
+        .school-selector select {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .school-selector select:hover, .school-selector select:focus {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(244, 63, 94, 0.5);
+        }
+
+        .school-selector select option {
+            background: #0f172a; /* 保证下拉列表文字清晰 */
+            color: white;
+        }
+
+        .school-selector button {
+            padding: 8px 20px;
+            border-radius: 8px;
+            background: var(--secondary-glow);
+            border: none;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .school-selector button:hover {
+            background: #e11d48;
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.6);
         }
 
         /* 底部信息 */
@@ -222,15 +273,27 @@
         
         <div class="projects-container">
             
-            <!-- 项目一：招生解析 (新项目) -->
-            <!-- 将来如果你有更多学校，可以把这里当做一个系列入口，或者继续复制这样的卡片 -->
-            <a href="西安交通大学-broll-v2.html" class="featured-project data-insight">
+            <!-- 项目一：招生解析 (集合卡片) -->
+            <!-- 注意：这里改成了 div，不再是一个超链接了 -->
+            <div class="featured-project interactive-card data-insight">
                 <span class="project-badge red">数据洞察 / Data Insights</span>
-                <h3 class="project-title">宁夏招生解析 | 西安交通大学</h3>
-                <p class="project-desc">国内高校宁夏招生专业历年录取数据多维可视化与深度剖析</p>
-            </a>
+                <h3 class="project-title">国内高校宁夏招生解析</h3>
+                <p class="project-desc">历年录取专业数据多维可视化与深度剖析系统</p>
+                
+                <!-- 新增：下拉框与跳转按钮 -->
+                <div class="school-selector">
+                    <select id="schoolSelect">
+                        <option value="" disabled selected>-- 请选择高校 --</option>
+                        <option value="西安交通大学-broll-v2.html">西安交通大学</option>
+                        <option value="同济大学-broll-v2(1).html">同济大学</option>
+                        <!-- 以后如果要增加清华，就在这里加一行： -->
+                        <!-- <option value="清华大学-broll-v2.html">清华大学</option> -->
+                    </select>
+                    <button onclick="goToSchool()">查看</button>
+                </div>
+            </div>
 
-            <!-- 项目二：全美高校星图 (原项目) -->
+            <!-- 项目二：全美高校星图 (原项目，保持超链接格式) -->
             <a href="us_map.html" class="featured-project">
                 <span class="project-badge">地理可视化 / Geo-Data</span>
                 <h3 class="project-title">Atlas.Edu | 全美百强高校星图</h3>
@@ -244,5 +307,22 @@
         </div>
     </main>
 
+    <!-- 跳转逻辑的 JavaScript -->
+    <script>
+        function goToSchool() {
+            // 获取下拉框
+            const selectElement = document.getElementById('schoolSelect');
+            // 获取当前选中的值（对应html文件名）
+            const targetUrl = selectElement.value;
+            
+            if (targetUrl) {
+                // 如果有选择高校，执行页面跳转
+                window.location.href = targetUrl;
+            } else {
+                // 如果没有选择高校（保持在默认的 "-- 请选择高校 --"），弹出提示
+                alert('请先选择一所需要查看的高校！');
+            }
+        }
+    </script>
 </body>
 </html>
